@@ -28,13 +28,14 @@ import java.util.*;
 /**
  * Description:这是一个基础的控制器基类，包含常见的基本的CRUD的请求的处理，其他特殊的方法通过子类继承实现。
  * T1,是操作的实体类，T2是对应的service接口类继承IBaseService
+ * ID 为主键类型
  *
  * @author dbdu
  * @date 18-6-27 上午7:25
  */
 @SuppressWarnings("all")
 @Slf4j
-public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
+public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> {
 
     @Autowired
     public ILocaleMsgSourceService msgSourceService;
@@ -150,8 +151,8 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      * @author dbdu
      * @date 18-6-17 下午12:47
      */
-    public R getById(Long id) {
-        if (CommUtil.isEmptyLong(id)) {
+    public R getById(ID id) {
+        if (id == null) {
             return R.error("id 不允许为空！");
         }
 
@@ -228,13 +229,13 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
     /**
      * Description:使用id删除指定的实体
      *
-     * @param [request, response, session, entityId]
+     * @param [id]
      * @return java.lang.Object
      * @author dbdu
      * @date 18-6-17 下午12:49
      */
-    public R deleteById(Long id) {
-        if (CommUtil.isEmptyLong(id)) {
+    public R deleteById(ID id) {
+        if (id == null) {
             return R.ok();
         }
 
@@ -256,7 +257,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      * @author dbdu
      * @date 18-6-17 下午12:49
      */
-    public R deleteByIds(Long[] entityIds) {
+    public R deleteByIds(ID[] entityIds) {
         if (CommUtil.isEmptyArrary(entityIds)) {
             return R.ok();
         }
