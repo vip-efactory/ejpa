@@ -207,8 +207,8 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
             return R.error(1, "您更新的记录[" + entity.getId() + "]不存在！");
         } else {
             // 检查更新时间戳，避免用旧的数据更新数据库里的新数据
-            Date updateTime = entity.getModifiedTime();
-            Date dbUpdateTime = entityOptional.get().getModifiedTime();
+            Date updateTime = entity.getUpdateTime();
+            Date dbUpdateTime = entityOptional.get().getUpdateTime();
             if (updateTime != null && updateTime.compareTo(dbUpdateTime) != 0) {
                 return R.error("请获取最新的数据更新！");
             }
@@ -216,7 +216,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
         //检查业务key的存在性，不应该存在重复的业务key,此处不知道业务key是什么属性，可以在在service层实现，重写方法即可！
 
         if (null != entity.getId()) {
-            updateEntity(entityOptional.get(), entity, false, "createTime", "modifiedTime");
+            updateEntity(entityOptional.get(), entity, false, "createTime", "updateTime");
         }
 
         R r = R.ok().setData(entity);

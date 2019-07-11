@@ -57,7 +57,7 @@ public class BaseEntity extends BaseSearchEntity implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate //使用注解实现更新时间的更新
     @ApiModelProperty(hidden = true)
-    private Date modifiedTime;
+    private Date updateTime;
 
 
     /**
@@ -72,7 +72,7 @@ public class BaseEntity extends BaseSearchEntity implements Serializable {
     private String creatorNum;
 
     /**
-     * Description:更新人编号,//不使用id，如果人员被删除，看到一个数字是无意义的。
+     * Description:更新人编号或者姓名,//不使用id，如果人员被删除，看到一个数字是无意义的。
      * 修改人
      *
      * @author dbdu
@@ -81,7 +81,7 @@ public class BaseEntity extends BaseSearchEntity implements Serializable {
     @Column(length = 32, columnDefinition = "varchar(32) COMMENT '更新人'")
     @LastModifiedBy
     @ApiModelProperty(hidden = true)
-    private String modifierNum;
+    private String updaterNum;
 
     /**
      * Description:实体的业务唯一编码，因为业务上的重复通常都不是用id
