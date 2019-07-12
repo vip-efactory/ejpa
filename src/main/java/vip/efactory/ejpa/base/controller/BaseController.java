@@ -127,6 +127,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      *
      * @param q      模糊查询的值
      * @param fields 例如:"name,address,desc",对这三个字段进行模糊匹配
+     * @param page   分页参数对象
      * @return com.ddb.bss.utils.R
      * @author dbdu
      */
@@ -265,6 +266,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      * Description:根据实体编号检查实体是否存在,例如,员工工号可能不允许重复,此方法暂时没有使用
      *
      * @param entityNum 实体编号
+     * @param flag      更新还是新增
      * @return java.lang.String
      * @author dbdu
      */

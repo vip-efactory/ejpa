@@ -106,6 +106,11 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     }
 
     @Override
+    public <S extends T> Optional<S> findOne(Example<S> example) {
+        return br.findOne(example);
+    }
+
+    @Override
     public <S extends T> List<S> findAll(Example<S> var1) {
         return br.findAll(var1);
     }
@@ -113,6 +118,11 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     @Override
     public <S extends T> List<S> findAll(Example<S> var1, Sort var2) {
         return br.findAll(var1, var2);
+    }
+
+    @Override
+    public <S extends T> Page<S> findAll(Example<S> example, Pageable pageable) {
+        return br.findAll(example, pageable);
     }
 
     @Override
@@ -175,6 +185,16 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         return br.count();
     }
 
+    @Override
+    public <S extends T> long count(Example<S> example) {
+        return br.count(example);
+    }
+
+    @Override
+    public <S extends T> boolean exists(Example<S> example) {
+        return br.exists(example);
+    }
+
     //以下为自定义的方法：
 
     @Override
@@ -195,7 +215,6 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 //    public Boolean existsByEntityNum(String entityNum) {
 //        return br.existsByEntityNum(entityNum);
 //    }
-
 
 
     /**
