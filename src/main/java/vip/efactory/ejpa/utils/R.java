@@ -14,7 +14,6 @@ import java.io.Serializable;
  * 比如统计信息.
  *
  * @author dbdu
- * @date 18-10-1 下午4:59
  */
 @Builder
 @ToString
@@ -82,10 +81,9 @@ public class R<T> implements Serializable {
     /**
      * Description:使用枚举的错误信息!
      *
-     * @param [errorEnum]
-     * @return void
+     * @param errorEnum 指定的错误类型枚举
+     * @return R
      * @author dbdu
-     * @date 17-12-23 下午9:11
      */
     public static R error(IBaseErrorEnum errorEnum) {
         if (null != errorEnum) {
@@ -97,10 +95,10 @@ public class R<T> implements Serializable {
     /**
      * Description:使用国际化的枚举信息
      *
-     * @param [errorEnum, args]
-     * @return void
+     * @param errorEnum 指定的错误类型枚举
+     * @param args      可选的替换占位符的参数
+     * @return R
      * @author dbdu
-     * @date 17-12-23 下午9:11
      */
     public static R i18nError(IBaseErrorEnum errorEnum, String... args) {
         if (null != errorEnum) {

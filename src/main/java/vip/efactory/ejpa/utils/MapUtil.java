@@ -39,9 +39,8 @@ public class MapUtil {
      * Description:使用org.apache.commons.beanutils进行转换
      * 将对象转换为Map
      *
-     * @param [obj]
+     * @param obj 要转换为Map的对象
      * @author dbdu
-     * @date 18-2-8 下午4:46
      */
     public static Map<?, ?> objectToMap1(Object obj) {
         if (obj == null) {
@@ -54,11 +53,11 @@ public class MapUtil {
      * Description:使用org.apache.commons.beanutils进行转换
      * 将MAP转换为对象
      *
-     * @param [map, beanClass]
+     * @param map       对象
+     * @param beanClass 要转换为bean的class
      * @param map
      * @return java.lang.Object
      * @author dbdu
-     * @date 18-2-8 下午4:46
      */
     public static Object mapToObject1(Map<?, ?> map, Class beanClass) throws Exception {
         if (map == null) {
@@ -73,9 +72,8 @@ public class MapUtil {
      * Description:使用Introspector进行转换
      * 将对象转换为Map,但是以get开头的方法名及结果也会放在Map里面。,如果方法有参数可能会错误值或异常
      *
-     * @param [obj]
+     * @param obj 对象
      * @author dbdu
-     * @date 18-2-8 下午4:51
      */
     public static Map<String, Object> objectToMap2(Object obj) {
         if (obj == null) {
@@ -109,10 +107,10 @@ public class MapUtil {
      * Description:使用Introspector进行转换
      * 将Map转换为对象
      *
-     * @param [map, beanClass]
+     * @param map       Map对象
+     * @param beanClass bean的Class
      * @return java.lang.Object
      * @author dbdu
-     * @date 18-2-8 下午4:51
      */
     public static Object mapToObject2(Map<String, Object> map, Class<?> beanClass) {
         if (map == null) {
@@ -143,10 +141,10 @@ public class MapUtil {
      * Description:使用reflect进行转换
      * 将Map转换为对象，继承而来的属性如果没有默认初始值则为null值。
      *
-     * @param [map, beanClass]
+     * @param map       Map对象
+     * @param beanClass bean的Class
      * @return java.lang.Object
      * @author dbdu
-     * @date 18-2-8 下午4:53
      */
     public static Object mapToObject3(Map<String, Object> map, Class<?> beanClass) throws Exception {
         if (map == null)
@@ -168,9 +166,8 @@ public class MapUtil {
      * Description:使用reflect进行转换
      * 将对象转换为Map,注意此方法，对象继承的属性不会被处理，所以，如果实体有继承父级实体则不要使用此方法。
      *
-     * @param [obj]
+     * @param obj 对象
      * @author dbdu
-     * @date 18-2-8 下午4:53
      */
     public static Map<String, Object> objectToMap3(Object obj) throws Exception {
         if (obj == null) {
@@ -189,10 +186,9 @@ public class MapUtil {
     /**
      * Description:将Map集合转换为Json字符串
      *
-     * @param [map]
+     * @param map Map对象
      * @return java.lang.String
      * @author dbdu
-     * @date 18-2-9 上午8:19
      */
     public static String map2Json(Map<String, Object> map) {
         ObjectMapper mapper = new ObjectMapper();
@@ -206,12 +202,11 @@ public class MapUtil {
     }
 
     /**
-     * Description:
+     * Description: json字符串转为Map对象
      *
-     * @param [json]
+     * @param json 字符串
      * @return void
      * @author dbdu
-     * @date 18-2-9 上午8:19
      */
     public static Map json2Map(String json) {
         //Map<String, Map<String, Object>> maps = null;

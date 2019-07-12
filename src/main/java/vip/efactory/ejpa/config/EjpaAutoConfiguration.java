@@ -14,7 +14,6 @@ import javax.annotation.PostConstruct;
  * 含有注解的方法为切入点，方法拦截器为增强
  *
  * @author dbdu
- * @date 18-7-26 上午9:39
  */
 @Configuration
 @Slf4j

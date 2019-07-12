@@ -6,7 +6,6 @@ import org.springframework.util.StringUtils;
  * Description: SQL过滤，防止SQL注入
  *
  * @author dbdu
- * @date 19-3-12 下午2:26
  */
 public class SQLFilter {
 
@@ -14,10 +13,9 @@ public class SQLFilter {
      * Description: 检测是否包含非法的从关键字，
      * true 包含非法；false 不包含
      *
-     * @param [sql]
+     * @param sql 要检查的字符串
      * @return java.lang.Boolean
      * @author dbdu
-     * @date 19-3-12 下午2:37
      */
     public static Boolean sqlInject(String sql) {
         if (StringUtils.isEmpty(sql)) {

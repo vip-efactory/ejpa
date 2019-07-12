@@ -19,7 +19,6 @@ public class LocaleMsgSourceServiceImpl implements ILocaleMsgSourceService {
      * Description:注入Spring提供的Bean
      *
      * @author dbdu
-     * @date 18-6-25 下午3:13
      */
     @Autowired
     private MessageSource messageSource;

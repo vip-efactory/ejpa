@@ -17,7 +17,7 @@ import java.util.Date;
 
 
 /**
- * @EntityListeners(AuditingEntityListener.class) 是用于监听实体类添加或者删除操作的
+ * "@EntityListeners(AuditingEntityListener.class)" 是用于监听实体类添加或者删除操作的
  */
 @Getter
 @Setter

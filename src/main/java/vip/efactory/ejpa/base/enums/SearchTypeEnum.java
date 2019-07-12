@@ -3,7 +3,7 @@ package vip.efactory.ejpa.base.enums;
 import lombok.Getter;
 
 /**
- * Description: 实体属性的查询条件,例如:age >= 35
+ * Description: 实体属性的查询条件,例如:age ge 35
  *
  * @author dbdu
  * Created at:2019-03-09 16:06,
