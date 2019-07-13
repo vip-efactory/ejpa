@@ -60,6 +60,7 @@
             <artifactId>swagger-spring-boot-starter</artifactId>
             <version>${swagger-starter.version}</version>
         </dependency>
+
     </dependencies>
 
     <url>https://github.com/vip-efactory/ejpa</url>
@@ -113,6 +114,29 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+            <!--不对javadoc 做严格检查 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <additionalJOptions>
+                                <additionalJOption>
+                                    -Xdoclint:none
+                                </additionalJOption>
+                            </additionalJOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
