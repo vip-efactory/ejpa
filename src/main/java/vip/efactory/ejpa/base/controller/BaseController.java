@@ -290,6 +290,26 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
     }
 
 
+
+    /**
+     * 获取某个属性集合,去除重复,通常是前端选择需要,支持模糊匹配
+     * 非法属性自动过滤掉
+     *
+     * @param property 驼峰式的属性
+     * @param value    模糊查询的value值
+     * @return R
+     */
+    public R getPropertySet(String property, String value) {
+        // 属性名不允许为空
+        if (StringUtils.isEmpty(property)) {
+            return new R<>(new Exception("查询的属性名不允许为空!"));
+        }
+
+        return new R<>(entityService.advanceSearchProperty(property, value));
+    }
+
+
+
     /**
      * Description:实体的关联性检查的方法。
      * 如果存在关联性则返回true,否则返回false,这个方法只是模板，需要子类重,暂时没有使用

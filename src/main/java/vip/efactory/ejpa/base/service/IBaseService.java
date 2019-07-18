@@ -9,6 +9,7 @@ import vip.efactory.ejpa.base.entity.BaseEntity;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Description:服务层接口的父接口，继承此接口默认下面的这些方法要实现的，采用泛型的写法
@@ -262,6 +263,16 @@ public interface IBaseService<T extends BaseEntity, ID> {
      * @author dbdu
      */
     Page<T> advancedQuery(T entity, Pageable pageable);
+
+
+    /**
+     * 查询某个属性集合,不包含重复数据
+     *
+     * @param property 驼峰式的属性
+     * @param value    模糊查询的value值
+     * @return Set 集合
+     */
+    Set advanceSearchProperty(String property, String value);
 
 
 }

@@ -1,6 +1,7 @@
 package vip.efactory.ejpa.base.service.impl;
 
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -29,6 +30,7 @@ import java.util.*;
 /**
  * Description:这个类是BaseServcie的实现类，组件的实现类可以继承这个类来利用可以用的方法
  * 当然，也可以在这里添加调用前的检查逻辑
+ * 复杂条件处理,可以参照:https://blog.csdn.net/J080624/article/details/84581231
  * Created at:2018-06-25 16:10,
  * by dbdu
  */
@@ -255,6 +257,24 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         }
     }
 
+    @Override
+    public Set advanceSearchProperty(String property, String value) {
+        // 检查属性名是否合法
+        if (isPropertyIllegal(property)) {
+            return new HashSet();
+        }
+        // 构造查询条件
+        Specification<Object> specification =getSpec4PropSetByLike(property,value);
+        List<Object> result = br.findAll(specification);
+
+        if (result != null && result.size() > 0) {
+            return new TreeSet<Object>(result); // 去除重复数据
+        }
+
+        return new TreeSet();
+    }
+
+
     /**
      * Description:检查属性名和属性值的合法性,不合法的属性和值都会被移除
      *
@@ -390,6 +410,29 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     }
 
     /**
+     * 构造查询条件: 获取某个属性的模糊查询匹配的不重复集合,通常数据给ui界面选择使用
+     *
+     * @param property 要查询的属性
+     * @param value    属性值,可以为空串
+     * @return
+     */
+    private Specification<Object> getSpec4PropSetByLike(String property, String value) {
+        return new Specification<Object>() {
+            @Override
+            public Predicate toPredicate(Root<Object> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Path pp = root.get(property);
+                Predicate predicate = cb.like(pp, "%" + value + "%");
+                query.where(predicate);     // 添加查询条件
+                query.select(pp);           // 选择的属性,此处仅一个属性
+                query.distinct(true);       // 不允许重复
+                Predicate restriction = query.getRestriction();
+                return restriction;
+            }
+        };
+    }
+
+
+    /**
      * Description:利用反射获取属性的类型
      *
      * @param [key, entity]
@@ -412,6 +455,20 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         }
 
         return "";
+    }
+
+    /**
+     * 检查属性名是否非法
+     *
+     * @param 属性名
+     * @return true--非法;false--合法
+     */
+    @SneakyThrows
+    private boolean isPropertyIllegal(String property) {
+        // 检查属性名是否合法 非法
+        // k为属性名,v为属性值
+        Map<String, String> properties = (Map<String, String>) MapUtil.objectToMap1(clazz.newInstance());
+        return properties.keySet().contains(property) ? false : true;
     }
 
 }
