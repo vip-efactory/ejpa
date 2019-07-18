@@ -29,10 +29,9 @@ public class CommUtil {
      * Description:判断是否有空值或者null，只要有一个是空串或者null，就返回true
      * 因为在有些场景，不允许任何一个为空串或者null。
      *
-     * @param [mutiStr]
+     * @param mutiStr 多个字符串参数
      * @return boolean
      * @author dbdu
-     * @date 18-5-3 上午9:39
      */
     public static boolean isMutiHasNull(String... mutiStr) {
         //是否全是空串或者null
@@ -372,10 +371,9 @@ public class CommUtil {
     /**
      * Description:从富文本的字符串中使用正则表达式,抽出所有的url为Set集合
      *
-     * @param [content]
+     * @param content 内容
      * @return java.util.Set<java.lang.String>
      * @author dbdu
-     * @date 18-12-17 下午4:37
      */
     public static Set<String> getUrlFromString(String content) {
         Set<String> urls = new HashSet<>();
@@ -391,7 +389,6 @@ public class CommUtil {
         }
         return urls;
     }
-
 
 
     public static void main(String[] args) {

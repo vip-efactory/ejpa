@@ -46,4 +46,4 @@ public enum CommDBEnum implements IBaseErrorEnum {
         return errorCode + offset;
     }
 
-};
+}

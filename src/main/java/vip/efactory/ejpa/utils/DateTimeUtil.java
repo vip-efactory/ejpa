@@ -72,10 +72,8 @@ public abstract class DateTimeUtil {
     /**
      * Description:返回日期格式为：2018/10/12的字符串
      *
-     * @param []
      * @return java.lang.String
      * @author dbdu
-     * @date 18-10-12 下午1:59
      */
     public static String getCurrentDate() {
         return getCurrentDate(TimeZone.getDefault());
@@ -391,7 +389,7 @@ public abstract class DateTimeUtil {
         }
         String fullDateString = year + "/12/31 23:59:59";
         long currYearLast = getTimeFromString(fullDateString);
-    	
+
         /*String yearLast = DateTimeUtil.getFullDateStrFromLong(currYearLast);
         System.out.println("getYearLast:" + yearLast);*/
         return currYearLast;
@@ -400,10 +398,9 @@ public abstract class DateTimeUtil {
     /**
      * Description:dateString 应该是yyyy-MM-dd HH:mm:ss完整格式。
      *
-     * @param [dateString]
+     * @param dateString 日期字符串
      * @return java.util.Date
      * @author dbdu
-     * @date 18-2-9 上午11:17
      */
     public static Date toDate(String dateString) {
         if (CommUtil.isEmptyString(dateString))
@@ -423,10 +420,9 @@ public abstract class DateTimeUtil {
     /**
      * Description:dateString 应该是yyyy-MM-dd HH:mm格式。
      *
-     * @param [dateString]
+     * @param dateString 日期字符串
      * @return java.util.Date
      * @author dbdu
-     * @date 18-2-9 上午11:17
      */
     public static Date toDateWithoutSecond(String dateString) {
         if (CommUtil.isEmptyString(dateString))
@@ -524,10 +520,8 @@ public abstract class DateTimeUtil {
     /**
      * Description:返回格式为：2018-10-12 13:58:22的字符串
      *
-     * @param []
      * @return java.lang.String
      * @author dbdu
-     * @date 18-10-12 下午1:59
      */
     public static String getCurDateStr() {
         return getDateString(System.currentTimeMillis(), 0);
@@ -617,10 +611,9 @@ public abstract class DateTimeUtil {
      * Description:dateString 应该是yyyy-MM-dd HH:mm:ss完整格式。
      * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT
      *
-     * @param [dateString]
+     * @param dateString 日期字符串
      * @return long ;if success return date object's time, else return -1
      * @author dbdu
-     * @date 18-10-12 下午2:13
      */
     public static long getTimeFromString(String dateString) {
         Date date = toDate(dateString);
@@ -633,10 +626,9 @@ public abstract class DateTimeUtil {
      * Description:dateString 应该是yyyy-MM-dd HH:mm:ss完整格式。
      * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT
      *
-     * @param [dateString]
+     * @param dateString 日期字符串
      * @return java.lang.Long
      * @author dbdu
-     * @date 18-10-12 下午2:12
      */
     public static Long getTimeMSFromString(String dateString) {
         Date date = toDate(dateString);
@@ -1017,9 +1009,6 @@ public abstract class DateTimeUtil {
 
     /**
      * 获取一个月的最后一天
-     *
-     * @param dat
-     * @return
      */
     public static String getEndDateOfMonth(String dat) {// yyyy-MM-dd
         String str = dat.substring(0, 8);
@@ -1041,10 +1030,6 @@ public abstract class DateTimeUtil {
 
     /**
      * 判断二个时间是否在同一个周
-     *
-     * @param date1
-     * @param date2
-     * @return
      */
     public static boolean isSameWeekDates(Date date1, Date date2) {
         Calendar cal1 = Calendar.getInstance();
@@ -1068,8 +1053,6 @@ public abstract class DateTimeUtil {
 
     /**
      * 产生周序列,即得到当前时间所在的年度是第几周
-     *
-     * @return
      */
     public static String getSeqWeek() {
         Calendar c = Calendar.getInstance(Locale.CHINA);
@@ -1083,10 +1066,6 @@ public abstract class DateTimeUtil {
     /**
      * 获得一个日期所在的周的星期几的日期，如要找出2002年2月3日所在周的星期一是几号
      * sdate格式:"yyyy/MM/dd";"yyyy_MM_dd";"yyyy-MM-dd";"yyyyMMdd"
-     *
-     * @param sdate
-     * @param num
-     * @return
      */
     public static String getWeek(String sdate, String num) {
         // 再转换为时间
@@ -1113,9 +1092,6 @@ public abstract class DateTimeUtil {
     /**
      * 根据一个日期(标准格式的字符串)，返回是星期几的字符串
      * sdate:"yyyy/MM/dd";"yyyy_MM_dd";"yyyy-MM-dd";"yyyyMMdd"
-     *
-     * @param sdate
-     * @return
      */
     public static String getWeek(String sdate) {
         // 再转换为时间
@@ -1151,10 +1127,6 @@ public abstract class DateTimeUtil {
 
     /**
      * 两个时间之间的天数
-     *
-     * @param date1
-     * @param date2
-     * @return
      */
     public static long getDays(String date1, String date2) {
         if (date1 == null || date1.equals(""))
@@ -1176,9 +1148,6 @@ public abstract class DateTimeUtil {
     /**
      * 形成如下的日历 ， 根据传入的一个时间返回一个结构 星期日 星期一 星期二 星期三 星期四 星期五 星期六 下面是当月的各个时间
      * 此函数返回该日历第一行星期日所在的日期 sdate:"yyyy/MM/dd";"yyyy_MM_dd";"yyyy-MM-dd";"yyyyMMdd"
-     *
-     * @param sdate
-     * @return
      */
     public static String getNowMonth(String sdate) {
         // 取该时间所在月的一号
@@ -1206,9 +1175,6 @@ public abstract class DateTimeUtil {
 
     /**
      * 返回一个随机数
-     *
-     * @param i
-     * @return
      */
     public static String getRandom(int i) {
         Random jjj = new Random();
@@ -1220,28 +1186,6 @@ public abstract class DateTimeUtil {
             jj = jj + jjj.nextInt(9);
         }
         return jj;
-    }
-
-    /**
-     * @param args
-     */
-    public static boolean RightDate(String date) {
-
-        SimpleDateFormat sdf = formatterYMDHMS;
-        ;
-        if (date == null)
-            return false;
-        if (date.length() > 10) {
-            sdf = formatterYMDHMS;
-        } else {
-            sdf = formatterYMD;
-        }
-        try {
-            sdf.parse(date);
-        } catch (ParseException pe) {
-            return false;
-        }
-        return true;
     }
 
     /***************************************************************************
@@ -1374,9 +1318,6 @@ public abstract class DateTimeUtil {
 
     /**
      * 获取当前时间的前一天时间
-     *
-     * @param cl
-     * @return
      */
     private static String getBeforeDay(Calendar cl) {
         //使用roll方法进行向前回滚
@@ -1389,9 +1330,6 @@ public abstract class DateTimeUtil {
 
     /**
      * 获取当前时间的后一天时间
-     *
-     * @param cl
-     * @return
      */
     private static String getAfterDay(Calendar cl) {
         //使用roll方法进行回滚到后一天的时间
@@ -1465,10 +1403,7 @@ public abstract class DateTimeUtil {
     /**
      * Description:获取当前时间格式为yyyy-MM-dd HH:mm:ss的字符串
      *
-     * @param
-     * @return
      * @author dbdu
-     * @date 18-2-8 上午10:46
      */
     public static String getStringNow() {
         Date now = new Date();
@@ -1478,10 +1413,9 @@ public abstract class DateTimeUtil {
     /**
      * Description:获取时间格式为yyyy-MM-dd HH:mm:ss的字符串
      *
-     * @param [date]
+     * @param date 日期
      * @return java.lang.String
      * @author dbdu
-     * @date 18-2-6 下午2:17
      */
     public static String getStringDateTime(Date date) {
         if (date == null) {
@@ -1494,10 +1428,9 @@ public abstract class DateTimeUtil {
      * Description:从格式为yyyy-MM-dd HH:mm日期中，
      * 获取时间格式为yyyy-MM-dd的字符串
      *
-     * @param [date]
+     * @param date 日期
      * @return java.lang.String
      * @author dbdu
-     * @date 18-2-6 下午2:18
      */
     public static String getStringDate(Date date) {
         if (date == null) {
@@ -1509,10 +1442,9 @@ public abstract class DateTimeUtil {
     /**
      * Description:获取时间格式为HH:mm的字符串
      *
-     * @param [date]
+     * @param date 日期
      * @return java.lang.String
      * @author dbdu
-     * @date 18-2-6 下午2:19
      */
     public static String getStringTime(Date date) {
         if (date == null) {
@@ -1525,8 +1457,7 @@ public abstract class DateTimeUtil {
      * Description:取出传来的月份的最后一天
      *
      * @param
-     * @return
-     * Created at:18-4-25 下午1:27
+     * @return Created at:18-4-25 下午1:27
      */
     public static String getLastDayOfMonth(String dateStr) {
         SimpleDateFormat sfMonth = new SimpleDateFormat("yyyy-MM");
@@ -1554,8 +1485,7 @@ public abstract class DateTimeUtil {
      * Description:获取传来的字符串的下一个月份
      *
      * @param
-     * @return
-     * Created at:18-4-25 上午11:09
+     * @return Created at:18-4-25 上午11:09
      */
     public static String nextMonth(String dateStr) {
         SimpleDateFormat sfMonth = new SimpleDateFormat("yyyy-MM-dd");
@@ -1582,8 +1512,7 @@ public abstract class DateTimeUtil {
      * Description:获取当前月份
      *
      * @param
-     * @return
-     * Created at:18-4-25 下午1:13
+     * @return Created at:18-4-25 下午1:13
      */
     public static Integer nowMonth(String dateStr) {
         SimpleDateFormat sfMonth = new SimpleDateFormat("yyyy-MM");
@@ -1605,9 +1534,8 @@ public abstract class DateTimeUtil {
     /**
      * Description:获取当前时间字符串的年份
      *
-     * @param
-     * @return
-     * Created at:18-4-25 下午2:12
+     * @param 日期字符串
+     * @return Created at:18-4-25 下午2:12
      */
     public static Integer nowYear(String dateStr) {
         SimpleDateFormat sfMonth = new SimpleDateFormat("yyyy-MM");
@@ -1631,8 +1559,7 @@ public abstract class DateTimeUtil {
      * Description:判断两个日期是不是在同一个月
      *
      * @param
-     * @return
-     * Created at:18-4-26 下午4:18
+     * @return Created at:18-4-26 下午4:18
      */
     public static boolean isSameMonth(Date startDate, Date endDate) {
         Calendar sCal = Calendar.getInstance();
@@ -1649,10 +1576,8 @@ public abstract class DateTimeUtil {
     /**
      * Description:获取当天的开始的毫秒时间的，Long型，例如 2018-10-12 00:00:00 000 对应的Long值
      *
-     * @param []
      * @return java.lang.Long
      * @author dbdu
-     * @date 18-10-12 下午1:43
      */
     public static Long getTodayStart() {
         return DateTimeUtil.getTimeMSFromString(DateTimeUtil.getCurrentDate() + " 00:00:00");
@@ -1661,10 +1586,8 @@ public abstract class DateTimeUtil {
     /**
      * Description:获取当天的结束的毫秒时间的，Long型，例如 2018-10-12 23:59:59 999 对应的Long值
      *
-     * @param []
      * @return java.lang.Long
      * @author dbdu
-     * @date 18-10-12 下午1:45
      */
     public static Long getTodayEnd() {
         return DateTimeUtil.getTodayStart() + ONE_DAY_SECOND * 1000 - 1;

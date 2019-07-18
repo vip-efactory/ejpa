@@ -16,10 +16,7 @@ import java.util.Set;
 /**
  * Description:this util is used for Bean annotation validate by manual
  *
- * @param
  * @author dbdu
- * @date 18-1-16 下午4:49
- * @return
  */
 @Component
 @Slf4j
@@ -69,4 +66,4 @@ public class ValidateModelUtil {
         return errors;
     }
 
-}  
+}

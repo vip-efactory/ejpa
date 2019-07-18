@@ -44,10 +44,10 @@ public class BaseSearchField {
      */
     @ApiModelProperty(value = "结束值", name = "val2", notes = "搜索类型为０或１时此值不用，为２范围查询时，此值是结束值")
     private String val2;
-
-    /**
-     * name名称对应的字段的数据类型，例如：String,Integer,Date,Number等,JPA实现between查询必须要有
-     */
-    private String type;
+//
+//    /**
+//     * name名称对应的字段的数据类型，例如：String,Integer,Date,Number等,JPA实现between查询必须要有
+//     */
+//    private String type;
 
 }

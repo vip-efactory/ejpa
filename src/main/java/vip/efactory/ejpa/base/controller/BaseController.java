@@ -6,8 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.util.StringUtils;
 import vip.efactory.ejpa.base.entity.BaseEntity;
 import vip.efactory.ejpa.base.entity.BaseSearchField;
@@ -28,27 +26,28 @@ import java.util.*;
 /**
  * Description:这是一个基础的控制器基类，包含常见的基本的CRUD的请求的处理，其他特殊的方法通过子类继承实现。
  * T1,是操作的实体类，T2是对应的service接口类继承IBaseService
- * ID 为主键类型
  *
  * @author dbdu
- * @date 18-6-27 上午7:25
  */
 @SuppressWarnings("all")
 @Slf4j
-public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> {
-
+public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
+    /**
+     * 处理国际化资源的组件
+     */
     @Autowired
     public ILocaleMsgSourceService msgSourceService;
 
+    /**
+     * T1实体对应的Service,在子类控制器则不需要再次注入了
+     */
     @Autowired
     public T2 entityService;
+
     /**
      * Description:获取T的Class对象是关键，看构造方法
      *
      * @author dbdu
-     * @date 18-6-27 上午8:16
-     * @param
-     * @return
      */
     private Class<T1> clazz = null;
 
@@ -56,7 +55,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * Description:无参构造函数，获得T1的clazz对象
      *
      * @author dbdu
-     * @date 18-6-27 上午8:19
      */
     public BaseController() {
         //为了得到T1的Class，采用如下方法
@@ -64,7 +62,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
         Class clz = this.getClass();
         //2得到子类对象的泛型父类类型（也就是BaseDaoImpl<T>）
         ParameterizedType type = (ParameterizedType) clz.getGenericSuperclass();
-        System.out.println(type);
+//        System.out.println(type);
         //
         Type[] types = type.getActualTypeArguments();
         clazz = (Class<T1>) types[0];
@@ -74,23 +72,22 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     /**
      * Description:实体的分页查询，包括排序等,使用SpringData自己的对象接收分页参数
      *
-     * @param [page]
+     * @param page 分页参数对象
      * @return com.ddb.bss.utils.R
      * @author dbdu
-     * @date 19-6-10 下午2:00
      */
-    public R getByPage(@PageableDefault(value = 25, sort = {"id"}, direction = Sort.Direction.DESC) Pageable page) {
+    public R getByPage(Pageable page) {
         Page<T1> entities = entityService.findAll(page);
         return R.ok().setData(entities);
     }
 
     /**
-     * Description: 高级查询加分页
+     * Description: 高级查询加分页功能
      *
-     * @param [page, entity]
+     * @param page   分页参数对象
+     * @param entity 包含高级查询条件的实体
      * @return com.ddb.bss.utils.R
      * @author dbdu
-     * @date 19-7-5 下午12:44
      */
     public R advancedQueryByPage(Pageable page, T1 entity) {
         Page<T1> entities = entityService.advancedQuery(entity, page);
@@ -100,10 +97,9 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     /**
      * Description: 高级查询不分页
      *
-     * @param [entity]
+     * @param entity 包含高级查询条件的实体
      * @return com.ddb.bss.utils.R
      * @author dbdu
-     * @date 19-7-5 下午12:44
      */
     public R advancedQuery(T1 entity) {
         List<T1> entities = entityService.advancedQuery(entity);
@@ -113,11 +109,10 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     /**
      * Description: 同一个值,在多个字段中模糊查询,不分页
      *
-     * @param [q, fields]
-     *            fields   例如:"name,address,desc"
+     * @param q      模糊查询的值
+     * @param fields 例如:"name,address,desc",对这三个字段进行模糊匹配
      * @return com.ddb.bss.utils.R
      * @author dbdu
-     * @date 19-7-5 下午1:04
      */
     public R queryMutiField(String q, String fields) {
         // 构造高级查询条件
@@ -130,11 +125,11 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     /**
      * Description:同一个值,在多个字段中模糊查询,分页
      *
-     * @param [q, fields, page]
-     *            fields   例如:"name,address,desc"
+     * @param q      模糊查询的值
+     * @param fields 例如:"name,address,desc",对这三个字段进行模糊匹配
+     * @param page   分页参数对象
      * @return com.ddb.bss.utils.R
      * @author dbdu
-     * @date 19-7-5 下午1:06
      */
     public R queryMutiField(String q, String fields, Pageable page) {
         // 构造高级查询条件
@@ -146,13 +141,12 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     /**
      * Description:根据id获取一个实体的信息
      *
-     * @param [request, response, session, entityId]
+     * @param id 主键
      * @return java.lang.Object
      * @author dbdu
-     * @date 18-6-17 下午12:47
      */
-    public R getById(ID id) {
-        if (id == null) {
+    public R getById(Long id) {
+        if (CommUtil.isEmptyLong(id)) {
             return R.error("id 不允许为空！");
         }
 
@@ -169,10 +163,9 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     /**
      * Description:保存一个实体，保存之前会做检查
      *
-     * @param [request, response, session, cloud, result]
+     * @param entity 要保存的实体对象
      * @return java.lang.Object
      * @author dbdu
-     * @date 18-6-17 下午12:48
      */
     public R save(T1 entity) {
         List<String> errors = ValidateModelUtil.validateModel(entity);
@@ -190,10 +183,9 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     /**
      * Description:使用id来更新,如果属性空值,则不更新现有的值
      *
-     * @param [entity]
+     * @param entity 要更新的实体对象
      * @return com.ddb.bss.utils.R
      * @author dbdu
-     * @date 19-6-11 上午8:59
      */
     public R updateById(T1 entity) {
         List<String> errors = ValidateModelUtil.validateModel(entity);
@@ -229,13 +221,12 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     /**
      * Description:使用id删除指定的实体
      *
-     * @param [id]
+     * @param id 使用主键id
      * @return java.lang.Object
      * @author dbdu
-     * @date 18-6-17 下午12:49
      */
-    public R deleteById(ID id) {
-        if (id == null) {
+    public R deleteById(Long id) {
+        if (CommUtil.isEmptyLong(id)) {
             return R.ok();
         }
 
@@ -250,14 +241,13 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     }
 
     /**
-     * Description:使用id删除指定的实体
+     * Description:使用id数组来删除指定的实体
      *
-     * @param [request, response, session, entityId]
+     * @param entityIds 使用主键数组集合
      * @return java.lang.Object
      * @author dbdu
-     * @date 18-6-17 下午12:49
      */
-    public R deleteByIds(ID[] entityIds) {
+    public R deleteByIds(Long[] entityIds) {
         if (CommUtil.isEmptyArrary(entityIds)) {
             return R.ok();
         }
@@ -273,12 +263,12 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     }
 
     /**
-     * Description:根据实体编号检查实体是否存在
+     * Description:根据实体编号检查实体是否存在,例如,员工工号可能不允许重复,此方法暂时没有使用
      *
-     * @param [entityNum]
+     * @param entityNum 实体编号
+     * @param flag      更新还是新增
      * @return java.lang.String
      * @author dbdu
-     * @date 18-6-16 下午7:34
      */
     public String chkEntityExist(String entityNum, String flag) {
         if (CommUtil.isEmptyString(entityNum)) {
@@ -291,10 +281,9 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     /**
      * Description:检查操作的实体的id是否存在，因为多人操作，可能被其他人删除了！
      *
-     * @param [entityId]
+     * @param entityId 实体主键id
      * @return java.lang.String
      * @author dbdu
-     * @date 18-6-16 下午7:39
      */
     public Boolean chkEntityIdExist(Long entityId) {
         return null != entityId && entityService.existsById(entityId);
@@ -303,12 +292,11 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
 
     /**
      * Description:实体的关联性检查的方法。
-     * 如果存在关联性则返回true,否则返回false,这个方法只是模板，需要子类重
+     * 如果存在关联性则返回true,否则返回false,这个方法只是模板，需要子类重,暂时没有使用
      *
-     * @param [entity]
+     * @param entity 实体
      * @return java.lang.Boolean
      * @author dbdu
-     * @date 18-6-17 下午12:00
      */
     private Boolean chkEntityRelationship(Long entityId) {
         return false;
@@ -318,10 +306,12 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * Description:是否使用前端的数据实体的空值属性更新数据库中的
      * true，则用空置更新;fasle则不用空值更新,还允许部分更新
      *
-     * @param [dbEntity, entity, useNull, ignoreProperties]
+     * @param dbEntity         后端查询数据库的实体
+     * @param entity           前端传来的实体
+     * @param useNull          是否使用前端的空置更新数据库的有值属性
+     * @param ignoreProperties 忽略的属性,就是前端需要用空值更新后端的属性,比如常见的:更新时间,更新时间由框架或者数据库自己维护
      * @return T1
      * @author dbdu
-     * @date 19-7-8 下午5:04
      */
     private T1 updateEntity(T1 dbEntity, T1 entity, Boolean useNull, String... ignoreProperties) {
         if (!useNull) {
@@ -334,10 +324,10 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     /**
      * Description:根据查询值及多字段,来构建高级查询条件
      *
-     * @param [q, fields]
+     * @param q      查询额值
+     * @param fields 需要模糊匹配的字段
      * @return com.ddb.bss.base.entity.BaseEntity
      * @author dbdu
-     * @date 19-7-5 下午1:33
      */
     @SneakyThrows
     private T1 buildQueryConditions(String q, String fields) {

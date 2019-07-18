@@ -13,10 +13,7 @@ import java.util.Set;
  * Description:JPA中的PO持久化，会用null值更新已有的属性值，有时候这并不是我们想要的，这个工具类就是做这个事情
  * 同时支持要复制又不全部复制的做法！
  *
- * @param
  * @author dbdu
- * @date 18-4-19 下午4:48
- * @return
  */
 public class UpdatePoUtil {
     /**
