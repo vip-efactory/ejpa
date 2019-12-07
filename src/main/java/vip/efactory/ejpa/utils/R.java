@@ -4,14 +4,14 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
+import vip.efactory.ejpa.enums.CommonEnum;
 import vip.efactory.ejpa.enums.ErrorCodeUtil;
 import vip.efactory.ejpa.enums.IBaseErrorEnum;
 
 import java.io.Serializable;
 
 /**
- * Description:响应的实体类,之所以继承MAP,因为有些时候不是整体对象,方便处理零散的情况
- * 比如统计信息.
+ * Description:响应的实体类
  *
  * @author dbdu
  */
@@ -25,7 +25,7 @@ import java.io.Serializable;
 public class R<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // 响应返回码,0 表示正常
+    // 响应返回码,0 表示正常，后面可以定义国际化的错误编码
     @ApiModelProperty(value = "响应码,0正常;1不正常", name = "code")
     private int code = 0;
     // 响应描述信息
@@ -37,43 +37,47 @@ public class R<T> implements Serializable {
 
     // 构造函数
     public R() {
-        this.code = 0;
-        this.msg = "success";
     }
 
-    public R(T data) {
+    public R(T data, int code, String msg) {
         this.data = data;
-    }
-
-    public R(T data, String msg) {
-        this.data = data;
+        this.code = code;
         this.msg = msg;
     }
 
-    public R(Throwable e) {
-        this.msg = e.getMessage();
-        this.code = 1;
+    // 正常返回
+    public static <T> R<T> ok() {
+        return genr(CommonEnum.SUCCESS);
     }
 
-    // 正常返回
-    public static R ok() {
-        return new R();
+    public static <T> R<T> ok(T data) {
+        return genr(data, CommonEnum.SUCCESS);
+    }
+
+    public static <T> R<T> ok(T data, String msg) {
+        return genr(data, CommonEnum.SUCCESS.getErrorCode(), msg);
     }
 
     // 返回错误信息
-    public static R error(int code, String msg) {
-        R r = new R();
-        r.setCode(code);
-        r.setMsg(msg);
-        return r;
+    public static <T> R<T> error() {
+        return genr(CommonEnum.ERROR);
     }
 
-    public static R error() {
-        return error(500, "未知异常，请联系管理员");
+    public static <T> R<T> error(String msg) {
+        return genr(null, CommonEnum.ERROR.getErrorCode(), msg);
     }
 
-    public static R error(String msg) {
-        return error(500, msg);
+    // 支持异常对象
+    public static <T> R<T> error(Throwable e) {
+        return genr(null, CommonEnum.ERROR.getErrorCode(), e.getMessage());
+    }
+
+    public static <T> R<T> error(int code, String msg) {
+        return genr(null, code, msg);
+    }
+
+    public static <T> R<T> error(int code, T data, String msg) {
+        return genr(data, code, msg);
     }
 
     // 国际化返回错误信息
@@ -85,7 +89,7 @@ public class R<T> implements Serializable {
      * @return R
      * @author dbdu
      */
-    public static R error(IBaseErrorEnum errorEnum) {
+    public static <T> R<T> error(IBaseErrorEnum errorEnum) {
         if (null != errorEnum) {
             return R.error(errorEnum.getErrorCode(), errorEnum.getReason());
         }
@@ -100,11 +104,51 @@ public class R<T> implements Serializable {
      * @return R
      * @author dbdu
      */
-    public static R i18nError(IBaseErrorEnum errorEnum, String... args) {
+    public static <T> R<T> i18nError(IBaseErrorEnum errorEnum, String... args) {
         if (null != errorEnum) {
             return R.error(errorEnum.getErrorCode(), ErrorCodeUtil.getMessage(errorEnum, args));
         }
         return R.error();
     }
 
+    /**
+     * 生成响应对象r，
+     *
+     * @param IBaseErrorEnum 枚举类型
+     * @param <T>            数据的泛型类型
+     * @return R 响应的对象包装
+     */
+    private static <T> R<T> genr(IBaseErrorEnum errorEnum) {
+        return genr(null, errorEnum.getErrorCode(), errorEnum.getReason());
+    }
+
+    /**
+     * 生成响应对象r，
+     *
+     * @param data           响应对象的数据
+     * @param IBaseErrorEnum 枚举类型
+     * @param <T>            数据的泛型类型
+     * @return R 响应的对象包装
+     */
+    private static <T> R<T> genr(T data, IBaseErrorEnum errorEnum) {
+        return genr(data, errorEnum.getErrorCode(), errorEnum.getReason());
+    }
+
+    /**
+     * 生成响应对象r，
+     *
+     * @param data 响应对象的数据
+     * @param code 响应码
+     * @param msg  错误信息
+     * @param <T>  数据的泛型类型
+     * @return R 响应的对象包装
+     */
+    private static <T> R<T> genr(T data, int code, String msg) {
+        return new R<T>(data, code, msg);
+//        R<T> r = new R<>();
+//        r.setCode(code);
+//        r.setData(data);
+//        r.setMsg(msg);
+//        return r;
+    }
 }

@@ -302,13 +302,11 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
     public R getPropertySet(String property, String value) {
         // 属性名不允许为空
         if (StringUtils.isEmpty(property)) {
-            return new R<>(new Exception("查询的属性名不允许为空!"));
+            return R.error(new Exception("查询的属性名不允许为空!"));
         }
 
-        return new R<>(entityService.advanceSearchProperty(property, value));
+        return R.ok(entityService.advanceSearchProperty(property, value));
     }
-
-
 
     /**
      * Description:实体的关联性检查的方法。
