@@ -12,10 +12,10 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <spring.boot.version>2.1.6.RELEASE</spring.boot.version>
+        <spring.boot.version>2.2.1.RELEASE</spring.boot.version>
         <beanutils.version>1.9.3</beanutils.version>
         <swagger-starter.version>1.9.0.RELEASE</swagger-starter.version>
-        <lombok.version>1.18.8</lombok.version>
+        <lombok.version>1.18.10</lombok.version>
     </properties>
 
     <dependencies>
