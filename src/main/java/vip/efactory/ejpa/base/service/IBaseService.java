@@ -218,6 +218,16 @@ public interface IBaseService<T extends BaseEntity, ID> {
 
     // 上面的方法是框架自带的，下面的是用户自定义的方法
 
+
+    /**
+     * Description: 根据实体的属性名称判断，实体是否存在,
+     * 注意：使用此方法，要自己保证属性名称的正确性，否则抛异常！
+     * @param propertyName 实体的属性名，暂时支持字符串类型
+     * @param propertyValue 实体的属性名对应的值,仅支持简单的基本类型的值为字符串的，不支持其他的自定义类的类型
+     * @return boolean true实体存在；false 不存在。
+     */
+    boolean existsByEntityProperty(String propertyName,String propertyValue) throws NoSuchFieldException;
+
     /**
      * Description:使用主键批量删除
      *

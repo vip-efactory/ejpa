@@ -200,6 +200,17 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     //以下为自定义的方法：
 
     @Override
+    public boolean existsByEntityProperty(String propertyName, String propertyValue) throws NoSuchFieldException {
+        // 检查属性名是否合法，不合法抛异常
+        if (isPropertyIllegal(propertyName)) {
+            throw new NoSuchFieldException(propertyName + "不存在！");
+        }
+        // 查询该属性值的记录是否存在
+        Set resultSet = advanceSearchProperty(propertyName, propertyValue);
+        return resultSet.size() > 0 ? true : false;
+    }
+
+    @Override
     public int deleteAllById(Iterable<ID> var1) {
         String hql = "delete from " + clazz.getSimpleName() + " t where t.id in (?1)";
         Query query = em.createQuery(hql);
@@ -264,7 +275,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
             return new HashSet();
         }
         // 构造查询条件
-        Specification<Object> specification =getSpec4PropSetByLike(property,value);
+        Specification<Object> specification = getSpec4PropSetByLike(property, value);
         List<Object> result = br.findAll(specification);
 
         if (result != null && result.size() > 0) {
