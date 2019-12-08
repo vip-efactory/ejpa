@@ -18,19 +18,23 @@ import java.util.Date;
 
 /**
  * "@EntityListeners(AuditingEntityListener.class)" 是用于监听实体类添加或者删除操作的
+ *  ID 为主键的泛型，子类继承需要指定ID的类型，这样将ID实现放在子类中，具有更广的适用性
  */
 @Getter
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @ApiModel(value = "基础实体", description = "所有数据表的通用部分")
-public class BaseEntity extends BaseSearchEntity implements Serializable {
+public abstract class BaseEntity<ID> extends BaseSearchEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ApiModelProperty(name = "id", example = "1")
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @ApiModelProperty(name = "id", example = "1")
+//    private Long id;
+    // 将主键的set与get的实现移植到子类这样更具有灵活性
+    public abstract ID getId();
+    public abstract void setId(ID id);
 
     /**
      * Description:创建日期,数据库底层实现时间的创建

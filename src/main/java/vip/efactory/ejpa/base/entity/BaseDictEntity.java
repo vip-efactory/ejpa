@@ -17,7 +17,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @MappedSuperclass
-public class BaseDictEntity extends BaseEntity {
+public class BaseDictEntity extends BaseEntity<Long> {
     private static final long serialVersionUID = 1L;
 
     @Id
