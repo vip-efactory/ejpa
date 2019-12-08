@@ -333,6 +333,15 @@ public class CommUtil {
     }
 
 
+    /**
+     * 比较两个版本号的大小，如果version1大于version2，返回值为1，等于为0，小于为-1
+     *  版本号样例：1.0.1
+     * @param version1
+     *            第一个版本号
+     * @param version2
+     *            目标版本号
+     * @return
+     */
     public static Integer compareVersion(String version1, String version2) {
         try {
             if (version1 == null || version2 == null) {
@@ -343,30 +352,23 @@ public class CommUtil {
             if (versionArray1.length != 3 || versionArray2.length != 3) {
                 throw new IllegalArgumentException("Bad version number");
             }
-            StringBuffer version1Str = new StringBuffer();
-            StringBuffer version2Str = new StringBuffer();
-            for (int index = 0; index < 3; index++) {
-                version1Str.append(versionArray1[index]);
-                version2Str.append(versionArray2[index]);
-                int verDiffLen = versionArray1[index].length() - versionArray2[index].length();
-                if (verDiffLen > 0) {
-                    for (int i = 0; i < Math.abs(verDiffLen); i++) {
-                        version2Str.append("0");
-                    }
-                } else {
-                    for (int i = 0; i < Math.abs(verDiffLen); i++) {
-                        version1Str.append("0");
-                    }
+            // 逐段比较版本号，先比较第一位
+            Integer result = null;
+            for (int i = 0; i < 3; i++) {
+                Integer v1 = Integer.parseInt(versionArray1[i]);
+                Integer v2 = Integer.parseInt(versionArray2[i]);
+                result = Integer.compare(v1 - v2, 0);
+                if (result != 0) {
+                    break;
                 }
             }
-
-            Integer verDiff = Integer.valueOf(version1Str.toString()) - Integer.valueOf(version2Str.toString());
-            return verDiff > 0 ? 1 : (verDiff < 0 ? -1 : 0);
+            return result;
         } catch (Exception ex) {
             log.error("Error to compare version", ex);
             return -2;
         }
     }
+
 
     /**
      * Description:从富文本的字符串中使用正则表达式,抽出所有的url为Set集合
