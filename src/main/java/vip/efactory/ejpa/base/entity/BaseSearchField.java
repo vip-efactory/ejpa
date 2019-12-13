@@ -46,12 +46,6 @@ public class BaseSearchField {
     private String val2;
 
     /**
-     * 条件级别，1级，2级...  1级条件就是最外层条件，若不写默认为第一层
-     */
-    @ApiModelProperty(value = "条件层次", name = "level", notes = "条件级别，1级，2级...  1级条件就是最外层条件，")
-    private String level;
-
-    /**
      * 条件位置顺序，例如都是同级，一级的情况下，这个条件是在前面还是后面。可不写，有则使用，没有则随机排
      */
     @ApiModelProperty(value = "条件位置顺序", name = "order", notes = "条件级别，1级，2级...  1级条件就是最外层条件，")

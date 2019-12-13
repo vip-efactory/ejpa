@@ -346,20 +346,20 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         return new Specification<T>() {
             @Override
             public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                int searchRelation = entity.getRelationType() == null ? 0 : entity.getRelationType();  //若为空,默认为或的关系
+//                int searchRelation = entity.getRelationType() == null ? 0 : entity.getRelationType();  //若为空,默认为或的关系
                 Predicate predicate;
-                // 检查所有条件之间的关系
-                switch (searchRelation) {
-//                    case -1:        // NOT(-1, "非关系--条件取反"),
-//                        break;
-                    case 1:         // AND(1, "与关系--所有条件满足");
+//                // 检查所有条件之间的关系
+//                switch (searchRelation) {
+////                    case -1:        // NOT(-1, "非关系--条件取反"),
+////                        break;
+//                    case 1:         // AND(1, "与关系--所有条件满足");
                         predicate = cb.conjunction();
-                        break;
-                    default:
-                        // 默认为0   OR(0, "或关系--满足任一条件"),
-                        predicate = cb.disjunction();
-                }
-
+//                        break;
+//                    default:
+//                        // 默认为0   OR(0, "或关系--满足任一条件"),
+//                        predicate = cb.disjunction();
+//                }
+//
                 List<Expression<Boolean>> expressions = predicate.getExpressions();   // 保存查询条件
                 Set<BaseSearchField> conditions = entity.getConditions();
                 // 检查条件是否合法,移除非法的条件
@@ -407,6 +407,12 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                                 break;
                             case 7:     //  GE(7, "大于等于查询");
                                 expressions.add(cb.greaterThanOrEqualTo(root.get(key), val));
+                                break;
+                            case 8:     // IS_NULL(8, "Null值查询"),
+                                expressions.add(cb.isNull(root.get(key)));
+                                break;
+                            case 9:     // NOT_NULL(9, "非Null值查询")
+                                expressions.add(cb.isNotNull(root.get(key)));
                                 break;
                             default:
                                 // 0 或其他情况,则为模糊查询,FUZZY(0, "模糊查询"),

@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 import vip.efactory.ejpa.base.entity.BaseEntity;
 import vip.efactory.ejpa.base.entity.BaseSearchField;
-import vip.efactory.ejpa.base.enums.SearchRelationEnum;
+import vip.efactory.ejpa.base.enums.ConditionRelationEnum;
 import vip.efactory.ejpa.base.enums.SearchTypeEnum;
 import vip.efactory.ejpa.base.service.IBaseService;
 import vip.efactory.ejpa.i18n.ILocaleMsgSourceService;
@@ -371,7 +371,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
                 condition.setVal(q);
                 conditions.add(condition);
             }
-            entity.setRelationType(SearchRelationEnum.OR.getValue());  // 所有条件或的关系
+//            entity.setRelationType(ConditionRelationEnum.OR.getValue());  // 所有条件或的关系
             entity.setConditions(conditions);
         }
         return entity;
