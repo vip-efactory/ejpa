@@ -343,6 +343,27 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
      * @date 19-7-5 下午12:25
      */
     private Specification<T> getSpecification(T entity) {
+        // TODO 判断条件是否为空
+
+        // TODO 判断条件是否只有一个
+
+        // TODO 有多个条件，是否含有()组查询
+          // 无括号组查询
+            // 对条件位置进行 排序，
+                // 生成条件查询语句
+
+          // 有括号组
+            // 按照括号分组 构建查询条件。
+
+
+        // 保存最终生成的查询条件。
+
+        // 执行查询，返回结果！
+
+
+
+
+
         return new Specification<T>() {
             @Override
             public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -360,6 +381,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 //                        predicate = cb.disjunction();
 //                }
 //
+                cb.disjunction()
                 List<Expression<Boolean>> expressions = predicate.getExpressions();   // 保存查询条件
                 Set<BaseSearchField> conditions = entity.getConditions();
                 // 检查条件是否合法,移除非法的条件
