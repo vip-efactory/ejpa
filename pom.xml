@@ -16,6 +16,7 @@
         <beanutils.version>1.9.3</beanutils.version>
         <swagger-starter.version>1.9.0.RELEASE</swagger-starter.version>
         <lombok.version>1.18.10</lombok.version>
+        <common.i18n.version>1.0.0</common.i18n.version>
     </properties>
 
     <dependencies>
@@ -48,6 +49,14 @@
 <!--            <scope>runtime</scope>-->
 <!--        </dependency>-->
 
+        <!-- 引入国际化的依赖 -->
+        <dependency>
+            <groupId>vip.factory</groupId>
+            <artifactId>common-i18n</artifactId>
+            <version>${common.i18n.version}</version>
+        </dependency>
+
+        <!-- lombok 工具依赖 -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
