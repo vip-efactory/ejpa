@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-vip.efactory.ejpa.config.EjpaAutoConfiguration
+  vip.efactory.common.i18n.config.MessageSourceConfig,\
+  vip.efactory.ejpa.config.EjpaAutoConfiguration

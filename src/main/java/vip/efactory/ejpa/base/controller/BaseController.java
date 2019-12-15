@@ -15,7 +15,7 @@ import vip.efactory.ejpa.utils.CommUtil;
 import vip.efactory.ejpa.utils.R;
 import vip.efactory.ejpa.utils.UpdatePoUtil;
 import vip.efactory.ejpa.utils.ValidateModelUtil;
-import vip.factory.common.i18n.service.ILocaleMsgSourceService;
+import vip.efactory.common.i18n.service.ILocaleMsgSourceService;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

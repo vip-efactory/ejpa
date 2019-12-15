@@ -3,7 +3,7 @@ package vip.efactory.ejpa.utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import vip.factory.common.i18n.service.ILocaleMsgSourceService;
+import vip.efactory.common.i18n.service.ILocaleMsgSourceService;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;

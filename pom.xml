@@ -51,7 +51,7 @@
 
         <!-- 引入国际化的依赖 -->
         <dependency>
-            <groupId>vip.factory</groupId>
+            <groupId>vip.efactory</groupId>
             <artifactId>common-i18n</artifactId>
             <version>${common.i18n.version}</version>
         </dependency>
