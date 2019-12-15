@@ -10,8 +10,8 @@ import lombok.Getter;
  * Created at:2019-03-09 16:06,
  */
 @Getter
-public enum SearchRelationEnum {
-    //NOT(-1, "非关系--条件取反"),
+public enum ConditionRelationEnum {
+    NOT(-1, "非关系--条件取反"),
     OR(0, "或关系--满足任一条件"),
     AND(1, "与关系--所有条件满足");
 
@@ -21,15 +21,15 @@ public enum SearchRelationEnum {
     //枚举说明
     private String desc;
 
-    SearchRelationEnum(int value, String desc) {
+    ConditionRelationEnum(int value, String desc) {
         this.value = value;
         this.desc = desc;
     }
 
-    public static SearchRelationEnum getByValue(int value) {
+    public static ConditionRelationEnum getByValue(int value) {
         switch (value) {
-//            case -1:
-//                return NOT;
+            case -1:
+                return NOT;
             case 0:
                 return OR;
             case 1:

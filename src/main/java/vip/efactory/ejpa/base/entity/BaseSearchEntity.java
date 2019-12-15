@@ -20,16 +20,6 @@ import java.util.Set;
 @JsonInclude(value = JsonInclude.Include.NON_NULL)      //null值的属性JSON不输出
 @ApiModel(value = "高级搜索条件实体", description = "仅在需要高级搜索的接口中,这个才需要")
 public class BaseSearchEntity {
-    /**
-     * Description: 关联类型：数据库不存这个字段
-     * ０--或的关系，满足任意一个条件即可；
-     * １--与的关系，满足所有条件；
-     * －１--非的关系，条件取反；
-     */
-    @Transient
-    @ApiModelProperty(hidden = true)
-    // @ApiModelProperty(value = "多条件之间关系", name = "relationType", notes = "０--或的关系，满足任意一个条件即可;１--与的关系，满足所有条件；")
-    private Integer relationType;
 
     /**
      * 数据库不存这个字段
@@ -37,7 +27,6 @@ public class BaseSearchEntity {
      */
     @Transient
     @ApiModelProperty(hidden = true)
-    //  @ApiModelProperty(value = "多条件集合", name = "conditions", notes = "不重复的条件集合")
     private Set<BaseSearchField> conditions;
 
 }

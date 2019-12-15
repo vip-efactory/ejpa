@@ -17,7 +17,10 @@ public enum SearchTypeEnum {
     LT(4, "小于查询"),
     LE(5, "小于等于查询"),
     GT(6, "大于查询"),
-    GE(7, "大于等于查询");
+    GE(7, "大于等于查询"),
+    IS_NULL(8, "Null值查询"),
+    NOT_NULL(9, "非Null值查询"),
+    ;
 
     // 枚举值
     private int value;
