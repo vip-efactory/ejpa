@@ -4,9 +4,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
-import vip.efactory.ejpa.enums.CommonEnum;
-import vip.efactory.ejpa.enums.ErrorCodeUtil;
-import vip.efactory.ejpa.enums.IBaseErrorEnum;
+import vip.factory.common.i18n.enums.CommonEnum;
+import vip.factory.common.i18n.enums.ErrorCodeUtil;
+import vip.factory.common.i18n.enums.IBaseErrorEnum;
 
 import java.io.Serializable;
 
