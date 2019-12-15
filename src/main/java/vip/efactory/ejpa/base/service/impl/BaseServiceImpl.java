@@ -381,7 +381,6 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 //                        predicate = cb.disjunction();
 //                }
 //
-                cb.disjunction()
                 List<Expression<Boolean>> expressions = predicate.getExpressions();   // 保存查询条件
                 Set<BaseSearchField> conditions = entity.getConditions();
                 // 检查条件是否合法,移除非法的条件
