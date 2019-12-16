@@ -167,7 +167,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      * @author dbdu
      */
     public R save(T1 entity) {
-        List<String> errors = ValidateModelUtil.validateModel(entity);
+        Map<String, String> errors = ValidateModelUtil.validateModel(entity);
 
         if (!errors.isEmpty()) {
             return R.error(1, "校验失败！").setData(errors);
@@ -187,7 +187,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      * @author dbdu
      */
     public R updateById(T1 entity) {
-        List<String> errors = ValidateModelUtil.validateModel(entity);
+        Map<String, String> errors = ValidateModelUtil.validateModel(entity);
 
         if (!errors.isEmpty()) {
             return R.error(1, "校验失败！").setData(errors);

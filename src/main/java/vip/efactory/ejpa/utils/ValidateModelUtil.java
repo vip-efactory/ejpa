@@ -8,10 +8,7 @@ import vip.efactory.common.i18n.service.ILocaleMsgSourceService;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Description:this util is used for Bean annotation validate by manual
@@ -31,10 +28,10 @@ public class ValidateModelUtil {
 
 
     //验证某一个对象
-    public static List<String> validateModel(Object obj) {
+    public static Map<String, String> validateModel(Object obj) {
 
         //用于存储验证后的错误信息
-        List<String> errors = new ArrayList<String>();
+        Map<String, String> errors = new TreeMap<>();
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
         //验证某个对象,，其实也可以只验证其中的某一个属性的
@@ -44,26 +41,54 @@ public class ValidateModelUtil {
         while (iter.hasNext()) {
             ConstraintViolation<Object> currentObj = iter.next();   //再执行一次就会跳到下一个对象
             String message = currentObj.getMessage();      //校验要显示的错误信息
-            // String property = currentObj.getPropertyPath().toString();    //错误信息对应的字段名
+            String property = currentObj.getPropertyPath().toString();    //错误信息对应的字段名
 
             // log.info("property：" + property + ",check failed:" + message);
-            if (message.startsWith("{") && message.endsWith("}")) {
-                //说明信息是键，不是硬编码的信息，使用对应的key来获取到制定的值
-                //去除两端的｛｝大括号
-                String key = message.substring(1, message.length() - 1);
-                String value = localeMessageSourceService.getMessage(key);
-                if (null == value || value.equals(key)) {
-                    value = key;
-                    log.warn("missing key [{}]", key);
+
+            //处理属性切分,例如：message="AAA{student.age}BBB {property.not.allow.negative}CCCC"
+            if (message.contains("{") && message.contains("}")) {  //说明包含占位符{}
+                String[] rawKeys = message.split("}");//得到：AAA{student.age、BBB {property.not.allow.negative、CCCC
+                // 得到所有的key
+                List<String> keys = new ArrayList<>();
+                for (String rawKey : rawKeys) {
+                    if (rawKey.contains("{")) {
+                        String key = rawKey.substring(rawKey.lastIndexOf("{") + 1); //获取key,例如：student.age
+                        keys.add(key);
+                    }
                 }
-                errors.add(value);
+                // 替换message里的占位符
+                for (String key : keys) {
+                    String value = localeMessageSourceService.getMessage(key);
+                    if (null == value || value.equals(key)) {
+                        value = key;
+                        log.warn("missing key [{}]", key);
+                    }
+                    message = message.replace("{" + key + "}", value);
+                }
+
+                // TODO 替换message 里国际化信息里的占位符
+                errors.put(property, message);
             } else {
                 //是硬编码的校验信息，直接取过来
-                errors.add(message);
+                errors.put(property, message);
             }
 
         }
         return errors;
     }
 
+    public static void main(String[] args) {
+        String message = "AAA{student.age}BBB {property.not.allow.negative}CCCC";
+        String[] rawKeys = message.split("}"); //得到：AAA{student.age、BBB {property.not.allow.negative、CCCC
+        List<String> keys = new ArrayList<>();
+        for (String rawKey : rawKeys) {
+            if (rawKey.contains("{")) {
+                String key = rawKey.substring(rawKey.lastIndexOf("{") + 1); //获取key,例如：student.age
+                keys.add(key);
+            }
+        }
+
+        System.out.println(keys);
+
+    }
 }
