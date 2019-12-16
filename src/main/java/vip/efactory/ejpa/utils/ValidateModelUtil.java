@@ -66,7 +66,15 @@ public class ValidateModelUtil {
                     message = message.replace("{" + key + "}", value);
                 }
 
-                // TODO 替换message 里国际化信息里的占位符
+                // 替换message 里国际化信息里的占位符,使用注解自带的属性值占位，例如：{min}-{max}
+                if (message.contains("{") && message.contains("}")) {
+                    // 得到检查注解里的参数，以便再次替换模板里的占位符
+                    Map<String, Object> params = currentObj.getConstraintDescriptor().getAttributes();
+                    for (Map.Entry param : params.entrySet()) {
+                        message = message.replace("{" + param.getKey() + "}", param.getValue().toString());
+                    }
+                }
+
                 errors.put(property, message);
             } else {
                 //是硬编码的校验信息，直接取过来
