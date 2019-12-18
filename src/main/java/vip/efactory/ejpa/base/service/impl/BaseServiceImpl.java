@@ -10,8 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import vip.efactory.ejpa.base.entity.BaseEntity;
 import vip.efactory.ejpa.base.entity.BaseSearchField;
+import vip.efactory.ejpa.base.enums.ConditionRelationEnum;
 import vip.efactory.ejpa.base.enums.SearchTypeEnum;
 import vip.efactory.ejpa.base.repository.BaseRepository;
 import vip.efactory.ejpa.base.service.IBaseService;
@@ -38,6 +40,7 @@ import java.util.*;
 @Slf4j
 @Transactional
 public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository> implements IBaseService<T, ID> {
+    private final String DEFAULT_GROUP_NAME = "DEFAULT_NO_GROUP"; //默认组的名称
 
     @Autowired
     EntityManager em;
@@ -343,108 +346,18 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
      * @date 19-7-5 下午12:25
      */
     private Specification<T> getSpecification(T entity) {
-        // TODO 判断条件是否为空
-
-        // TODO 判断条件是否只有一个
-
-        // TODO 有多个条件，是否含有()组查询
-          // 无括号组查询
-            // 对条件位置进行 排序，
-                // 生成条件查询语句
-
-          // 有括号组
-            // 按照括号分组 构建查询条件。
-
-
-        // 保存最终生成的查询条件。
-
-        // 执行查询，返回结果！
-
-
-
-
-
-        return new Specification<T>() {
-            @Override
-            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-//                int searchRelation = entity.getRelationType() == null ? 0 : entity.getRelationType();  //若为空,默认为或的关系
-                Predicate predicate;
-//                // 检查所有条件之间的关系
-//                switch (searchRelation) {
-////                    case -1:        // NOT(-1, "非关系--条件取反"),
-////                        break;
-//                    case 1:         // AND(1, "与关系--所有条件满足");
-                        predicate = cb.conjunction();
-//                        break;
-//                    default:
-//                        // 默认为0   OR(0, "或关系--满足任一条件"),
-//                        predicate = cb.disjunction();
-//                }
-//
-                List<Expression<Boolean>> expressions = predicate.getExpressions();   // 保存查询条件
-                Set<BaseSearchField> conditions = entity.getConditions();
-                // 检查条件是否合法,移除非法的条件
-                checkPropertyAndValueValidity(entity);
-
-                // conditions 不为空时循环
-                if (conditions.size() > 0) {
-                    conditions.forEach(bsf -> {
-                        int searchType = bsf.getSearchType() == null ? 0 : bsf.getSearchType();
-                        String key = bsf.getName();
-                        String val = bsf.getVal();      // 开始值
-                        String val2 = bsf.getVal2();    // 结束值
-                        switch (searchType) {                   // cb支持更多的方法,此处仅使用常用的!
-                            case 1:     //  EQ(1, "等于查询"),
-                                expressions.add(cb.equal(root.get(key), val));
-                                break;
-                            case 2:     //  RANGE(2, "范围查询"),
-                                // 此类型特殊,需要知道字段类型
-                                String fieldType = getPropType(key, entity); //直接通过当前实体或者父类来获取属性的类型
-                                if (fieldType.equalsIgnoreCase("Long")) {
-                                    expressions.add(cb.between(root.<Long>get(key), Long.valueOf(val), Long.valueOf(val2)));
-                                } else if (fieldType.equalsIgnoreCase("int") || fieldType.equalsIgnoreCase("Integer")) {
-                                    expressions.add(cb.between(root.<Integer>get(key), Integer.valueOf(val), Integer.valueOf(val2)));
-                                } else if (fieldType.equalsIgnoreCase("Double")) {
-                                    expressions.add(cb.between(root.<Double>get(key), Double.valueOf(val), Double.valueOf(val2)));
-                                } else if (fieldType.equalsIgnoreCase("float")) {
-                                    expressions.add(cb.between(root.<Float>get(key), Float.valueOf(val), Float.valueOf(val2)));
-                                } else if (fieldType.equalsIgnoreCase("Date")) {
-                                    expressions.add(cb.between(root.<Date>get(key), DateTimeUtil.getDateFromString(val), DateTimeUtil.getDateFromString(val2)));
-                                } else {
-                                    log.warn("忽略未知的区间查询类型:" + fieldType);
-                                }
-                                break;
-                            case 3:     //  NE(3, "不等于查询"),
-                                expressions.add(cb.notEqual(root.get(key), val));
-                                break;
-                            case 4:     //  LT(4, "小于查询"),
-                                expressions.add(cb.lessThan(root.get(key), val));
-                                break;
-                            case 5:     //  LE(5, "小于等于查询"),
-                                expressions.add(cb.lessThanOrEqualTo(root.get(key), val));
-                                break;
-                            case 6:     //  GT(6, "大于查询"),
-                                expressions.add(cb.greaterThan(root.get(key), val));
-                                break;
-                            case 7:     //  GE(7, "大于等于查询");
-                                expressions.add(cb.greaterThanOrEqualTo(root.get(key), val));
-                                break;
-                            case 8:     // IS_NULL(8, "Null值查询"),
-                                expressions.add(cb.isNull(root.get(key)));
-                                break;
-                            case 9:     // NOT_NULL(9, "非Null值查询")
-                                expressions.add(cb.isNotNull(root.get(key)));
-                                break;
-                            default:
-                                // 0 或其他情况,则为模糊查询,FUZZY(0, "模糊查询"),
-                                expressions.add(cb.like(root.get(key), "%" + val + "%"));
-                        }
-                    });
-                }
-
-                return predicate;
-            }
-        };
+        Set<BaseSearchField> conditions = entity.getConditions();
+        // 检查条件是否合法,移除非法的条件
+        checkPropertyAndValueValidity(entity);
+        // 将条件按照各自所在的组进行分组
+        Map<String, List<BaseSearchField>> groups = checkHasGroup(conditions);
+        // 判断条件是否只有一个默认组，若是一个组，则说明没有组
+        if (groups.size() == 1) {
+            return handleSingleGroupCondition(groups.get("DEFAULT_NO_GROUP"), entity);
+        } else {
+            // 有多个组
+            return handleGroupsCondition(groups, entity);
+        }
     }
 
     /**
@@ -508,5 +421,179 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         Map<String, String> properties = (Map<String, String>) MapUtil.objectToMap1(clazz.newInstance());
         return properties.keySet().contains(property) ? false : true;
     }
+
+    /**
+     * 处理多个分组条件的，条件查询构造
+     */
+    private Specification<T> handleGroupsCondition(Map<String, List<BaseSearchField>> groups, T entity) {
+        return new Specification<T>() {
+            @Override
+            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                // 先处理默认组
+                Predicate defaultGroupP = genPredicate4SingleGroup(groups.get("DEFAULT_NO_GROUP"), root, cb, entity);
+                // 处理其他组
+                for (Map.Entry<String, List<BaseSearchField>> entry : groups.entrySet()) {
+                    if ("DEFAULT_NO_GROUP".equalsIgnoreCase(entry.getKey())) {
+                        continue;
+                    }
+                    Predicate tmpGroupP = genPredicate4SingleGroup(entry.getValue(), root, cb, entity);
+
+                    // 从组内的一个条件里找到组的逻辑关系
+                    Integer logicalTypeGroup = entry.getValue().get(0).getLogicalTypeGroup();
+                    if (logicalTypeGroup == ConditionRelationEnum.AND.getValue()) {
+                        defaultGroupP = cb.and(defaultGroupP, tmpGroupP);
+                    } else {
+                        defaultGroupP = cb.or(defaultGroupP, tmpGroupP);
+                    }
+                }
+
+                return defaultGroupP;
+            }
+        };
+    }
+
+    /**
+     * 处理只有一个查询条件的查询条件转换
+     */
+    private Specification<T> handleSingleGroupCondition(List<BaseSearchField> fields, T entity) {
+
+        return new Specification<T>() {
+            @Override
+            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                return genPredicate4SingleGroup(fields, root, cb, entity);
+            }
+        };
+
+    }
+
+    /**
+     * 处理单个组内的条件生成
+     */
+    private Predicate genPredicate4SingleGroup(List<BaseSearchField> fields, Root<T> root, CriteriaBuilder cb, T entity) {
+        Predicate finalPredicat = null;
+        int count = fields.size();
+        Predicate fieldP = null;
+        for (int i = 0; i < count; i++) {
+            BaseSearchField field = fields.get(i);
+            // 得到条件的搜索类型，若为空默认模糊搜索
+            int searchType = field.getSearchType() == null ? 0 : field.getSearchType();
+            String key = field.getName();
+            String val = field.getVal();      // 开始值
+            String val2 = field.getVal2();    // 结束值
+
+            switch (searchType) {                   // cb支持更多的方法,此处仅使用常用的!
+                case 1:     //  EQ(1, "等于查询"),
+                    fieldP = cb.equal(root.get(key), val);
+                    break;
+                case 2:     //  RANGE(2, "范围查询"),
+                    // 此类型特殊,需要知道字段类型
+                    String fieldType = getPropType(key, entity); //直接通过当前实体或者父类来获取属性的类型
+                    if (fieldType.equalsIgnoreCase("Long")) {
+                        fieldP = cb.between(root.<Long>get(key), Long.valueOf(val), Long.valueOf(val2));
+                    } else if (fieldType.equalsIgnoreCase("int") || fieldType.equalsIgnoreCase("Integer")) {
+                        fieldP = cb.between(root.<Integer>get(key), Integer.valueOf(val), Integer.valueOf(val2));
+                    } else if (fieldType.equalsIgnoreCase("Double")) {
+                        fieldP = cb.between(root.<Double>get(key), Double.valueOf(val), Double.valueOf(val2));
+                    } else if (fieldType.equalsIgnoreCase("float")) {
+                        fieldP = cb.between(root.<Float>get(key), Float.valueOf(val), Float.valueOf(val2));
+                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                        fieldP = cb.between(root.<Date>get(key), DateTimeUtil.getDateFromString(val), DateTimeUtil.getDateFromString(val2));
+                    } else {
+                        log.warn("忽略未知的区间查询类型:" + fieldType);
+                    }
+                    break;
+                case 3:     //  NE(3, "不等于查询"),
+                    fieldP = cb.notEqual(root.get(key), val);
+                    break;
+                case 4:     //  LT(4, "小于查询"),
+                    fieldP = cb.lessThan(root.get(key), val);
+                    break;
+                case 5:     //  LE(5, "小于等于查询"),
+                    fieldP = cb.lessThanOrEqualTo(root.get(key), val);
+                    break;
+                case 6:     //  GT(6, "大于查询"),
+                    fieldP = cb.greaterThan(root.get(key), val);
+                    break;
+                case 7:     //  GE(7, "大于等于查询");
+                    fieldP = cb.greaterThanOrEqualTo(root.get(key), val);
+                    break;
+                case 8:     // IS_NULL(8, "Null值查询"),
+                    fieldP = cb.isNull(root.get(key));
+                    break;
+                case 9:     // NOT_NULL(9, "非Null值查询")
+                    fieldP = cb.isNotNull(root.get(key));
+                    break;
+                case 10:     // LEFT_LIKE(10, "左模糊查询"),
+                    fieldP = cb.like(root.get(key), "%" + val);
+                    break;
+                case 11:     // RIGHT_LIKE(11, "右模糊查询")
+                    fieldP = cb.like(root.get(key), val + "%");
+                    break;
+                default:
+                    // 0 或其他情况,则为模糊查询,FUZZY(0, "模糊查询"),
+                    fieldP = cb.like(root.get(key), "%" + val + "%");
+            }
+
+            if (i == 0) { // 第一个直接赋值
+                finalPredicat = fieldP;
+            } else {
+                // 获取当前条件的逻辑类型,即和上一个条件之间的关系，是或还是与
+                Integer logicalType = field.getLogicalType();
+                if (logicalType == ConditionRelationEnum.AND.getValue()) {
+                    finalPredicat = cb.and(finalPredicat, fieldP);
+                } else { // 其他为 logicalType == ConditionRelationEnum.OR.getValue()
+                    finalPredicat = cb.or(finalPredicat, fieldP);
+                }
+            }
+        }
+
+        return finalPredicat;
+    }
+
+    /**
+     * 检测条件中是否含有分组信息，例如：类似这样的条件：（A=3 || B=4） && （ C= 5 || D=6）
+     */
+    private Map<String, List<BaseSearchField>> checkHasGroup(Set<BaseSearchField> conditions) {
+        Map<String, List<BaseSearchField>> groups = new HashMap<>();
+        groups.put("DEFAULT_NO_GROUP", new ArrayList<BaseSearchField>()); //存放没有明确分组的条件
+
+        // 遍历所有的条件进行分组
+        for (BaseSearchField searchField : conditions) {
+            String groupName = searchField.getBracketsGroup();
+
+            if (StringUtils.isEmpty(groupName)) { // 条件没有分组信息
+                groups.get("DEFAULT_NO_GROUP").add(searchField);
+            } else { // 条件有分组信息
+                // 检查groups是否有此分组，有则用，没有则创建
+                if (groups.get(groupName) == null) {
+                    groups.put(groupName, new ArrayList<BaseSearchField>()); //创建新的分组，
+                }
+                groups.get(groupName).add(searchField);    // 再将条件放进去
+            }
+        }
+
+        // 对所有的分组按照 order排序
+        for (Map.Entry<String, List<BaseSearchField>> entry : groups.entrySet()) {
+            entry.getValue().sort(Comparator.comparingInt(BaseSearchField::getOrder));  // 条件排序,排序后默认是升序
+        }
+
+        return groups;
+    }
+
+//    public static void main(String[] args) {
+//        Set<BaseSearchField> conditions = new HashSet<BaseSearchField>();
+//        for (int i = 0; i < 15; i++) {
+//            BaseSearchField condition = new BaseSearchField();
+//            condition.setName("age");
+//            condition.setOrder(i);
+//            condition.setVal("" + 20 + i);
+//            conditions.add(condition);
+//        }
+//        // 所有的条件按照order排序
+//        ArrayList<BaseSearchField> fields = new ArrayList<>(conditions);
+//        fields.sort(Comparator.comparingInt(BaseSearchField::getOrder));  // 条件排序
+//        System.out.println(fields);
+//
+//    }
 
 }
