@@ -20,6 +20,8 @@ public enum SearchTypeEnum {
     GE(7, "大于等于查询"),
     IS_NULL(8, "Null值查询"),
     NOT_NULL(9, "非Null值查询"),
+    LEFT_LIKE(10, "左模糊查询"),
+    RIGHT_LIKE(11, "右模糊查询"),
     ;
 
     // 枚举值

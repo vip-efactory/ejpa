@@ -3,6 +3,8 @@ package vip.efactory.ejpa.base.entity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Description: 需要搜索的字段定义,这里的字段是指实体的属性,
@@ -12,13 +14,14 @@ import lombok.Data;
  * @author dbdu
  * Created at:2019-03-09 14:37,
  */
-@Data
+@Setter
 @ApiModel(value = "条件实体", description = "仅在需要高级搜索的接口中,这个才需要")
 public class BaseSearchField {
 
     /**
      * 字段名，例如，name,password等
      */
+    @Getter
     @ApiModelProperty(value = "条件字段名", name = "name", notes = "例如:是name字段或者age字段")
     private String name;
 
@@ -37,18 +40,20 @@ public class BaseSearchField {
      * 搜索类型为０或１默认取此值，为２范围查询时，此值是开始值
      */
     @ApiModelProperty(value = "字段值或开始值", name = "val", notes = "搜索类型为０或１默认取此值，为２范围查询时，此值是开始值")
+    @Getter
     private String val;
 
     /**
      * 搜索类型为０或１时此值不用，为２范围查询时，此值是结束值
      */
     @ApiModelProperty(value = "结束值", name = "val2", notes = "搜索类型为０或１时此值不用，为２范围查询时，此值是结束值")
+    @Getter
     private String val2;
 
     /**
      * 条件位置顺序，例如都是同级，一级的情况下，这个条件是在前面还是后面。可不写，有则使用，没有则随机排
      */
-    @ApiModelProperty(value = "条件位置顺序", name = "order", notes = "条件级别，1级，2级...  1级条件就是最外层条件，")
+    @ApiModelProperty(value = "条件位置顺序", name = "order", notes = "条件顺序")
     private Integer order;
 
     /**
@@ -61,20 +66,36 @@ public class BaseSearchField {
      * 括号组，哪些条件在同一个组里，例如：（a=3 || b=4） && （c=5 || d=7），简单条件时允许为空
      */
     @ApiModelProperty(value = "括号组", name = "bracketsGroup", notes = "哪些条件在同一个组里，例如：（a=3 || b=4） && （c=5 || d=7），简单条件时允许为空")
+    @Getter
     private String bracketsGroup;
 
     /**
      * 组逻辑类型,当前组条件是与的关系还是或的关系，0 为或的关系，1为与的关系   若为空，默认为0
-     *  是||（a=3 || b=4）
-     *  还是 &&（c=5 || d=7）
+     * 是||（a=3 || b=4）
+     * 还是 &&（c=5 || d=7）
      */
     @ApiModelProperty(value = "组逻辑类型", name = "logicalTypeGroup", notes = "当前组条件是与的关系还是或的关系，0 为或的关系，1为与的关系；若为空，默认为0")
     private Integer logicalTypeGroup;
+
+    public Integer getSearchType() {
+        return searchType == null ? 0 : searchType;
+    }
+
+    public Integer getOrder() {
+        return order == null ? 0 : order;
+    }
+
+    public Integer getLogicalType() {
+        return logicalType == null ? 0 : logicalType;
+    }
+
+    public Integer getLogicalTypeGroup() {
+        return logicalTypeGroup == null ? 0 : logicalTypeGroup;
+    }
 
 //
 //    /**
 //     * name名称对应的字段的数据类型，例如：String,Integer,Date,Number等,JPA实现between查询必须要有
 //     */
 //    private String type;
-
 }
