@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
+import vip.efactory.common.i18n.enums.CommAPIEnum;
+import vip.efactory.common.i18n.enums.CommDBEnum;
+import vip.efactory.common.i18n.service.ILocaleMsgSourceService;
 import vip.efactory.ejpa.base.entity.BaseEntity;
 import vip.efactory.ejpa.base.entity.BaseSearchField;
 import vip.efactory.ejpa.base.enums.SearchTypeEnum;
@@ -15,7 +18,6 @@ import vip.efactory.ejpa.utils.CommUtil;
 import vip.efactory.ejpa.utils.R;
 import vip.efactory.ejpa.utils.UpdatePoUtil;
 import vip.efactory.ejpa.utils.ValidateModelUtil;
-import vip.efactory.common.i18n.service.ILocaleMsgSourceService;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -146,7 +148,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      */
     public R getById(Long id) {
         if (CommUtil.isEmptyLong(id)) {
-            return R.error("id 不允许为空！");
+            return R.error(CommDBEnum.KEY_NOT_NULL);
         }
 
         Optional entity = entityService.findById(id);
@@ -154,7 +156,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
         if (entity.isPresent()) {
             return R.ok().setData(entity);
         } else {
-            return R.error("id=" + id + "对应的实体不存在");
+            return R.error(CommDBEnum.SELECT_NON_EXISTENT);
         }
 
     }
@@ -170,7 +172,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
         Map<String, String> errors = ValidateModelUtil.validateModel(entity);
 
         if (!errors.isEmpty()) {
-            return R.error(1, "校验失败！").setData(errors);
+            return R.error(CommAPIEnum.PROPERTY_CHECK_FAILED).setData(errors);
         }
 
         entityService.save(entity);
@@ -190,19 +192,19 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
         Map<String, String> errors = ValidateModelUtil.validateModel(entity);
 
         if (!errors.isEmpty()) {
-            return R.error(1, "校验失败！").setData(errors);
+            return R.error(CommAPIEnum.PROPERTY_CHECK_FAILED).setData(errors);
         }
 
         // 检查数据记录是否已经被删除了，被删除了，则不允许更新
         Optional<T1> entityOptional = entityService.findById(entity.getId());
         if (!entityOptional.isPresent()) {
-            return R.error(1, "您更新的记录[" + entity.getId() + "]不存在！");
+            return R.error(CommDBEnum.UPDATE_NON_EXISTENT);
         } else {
             // 检查更新时间戳，避免用旧的数据更新数据库里的新数据
             Date updateTime = entity.getUpdateTime();
             Date dbUpdateTime = entityOptional.get().getUpdateTime();
             if (updateTime != null && updateTime.compareTo(dbUpdateTime) != 0) {
-                return R.error("请获取最新的数据更新！");
+                return R.error(CommDBEnum.UPDATE_NEW_BY_OLD_NOT_ALLOWED);
             }
         }
         //检查业务key的存在性，不应该存在重复的业务key,此处不知道业务key是什么属性，可以在在service层实现，重写方法即可！
@@ -289,7 +291,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
     }
 
 
-
     /**
      * 获取某个属性集合,去除重复,通常是前端选择需要,支持模糊匹配
      * 非法属性自动过滤掉
@@ -301,7 +302,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
     public R getPropertySet(String property, String value) {
         // 属性名不允许为空
         if (StringUtils.isEmpty(property)) {
-            return R.error(new Exception("查询的属性名不允许为空!"));
+            return R.error(CommDBEnum.SELECT_PROPERTY_NOT_EMPTY);
         }
 
         return R.ok(entityService.advanceSearchProperty(property, value));

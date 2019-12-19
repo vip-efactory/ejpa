@@ -353,7 +353,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         Map<String, List<BaseSearchField>> groups = checkHasGroup(conditions);
         // 判断条件是否只有一个默认组，若是一个组，则说明没有组
         if (groups.size() == 1) {
-            return handleSingleGroupCondition(groups.get("DEFAULT_NO_GROUP"), entity);
+            return handleSingleGroupCondition(groups.get(DEFAULT_GROUP_NAME), entity);
         } else {
             // 有多个组
             return handleGroupsCondition(groups, entity);
@@ -430,10 +430,10 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
             @Override
             public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 // 先处理默认组
-                Predicate defaultGroupP = genPredicate4SingleGroup(groups.get("DEFAULT_NO_GROUP"), root, cb, entity);
+                Predicate defaultGroupP = genPredicate4SingleGroup(groups.get(DEFAULT_GROUP_NAME), root, cb, entity);
                 // 处理其他组
                 for (Map.Entry<String, List<BaseSearchField>> entry : groups.entrySet()) {
-                    if ("DEFAULT_NO_GROUP".equalsIgnoreCase(entry.getKey())) {
+                    if (DEFAULT_GROUP_NAME.equalsIgnoreCase(entry.getKey())) {
                         continue;
                     }
                     Predicate tmpGroupP = genPredicate4SingleGroup(entry.getValue(), root, cb, entity);
@@ -555,14 +555,14 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
      */
     private Map<String, List<BaseSearchField>> checkHasGroup(Set<BaseSearchField> conditions) {
         Map<String, List<BaseSearchField>> groups = new HashMap<>();
-        groups.put("DEFAULT_NO_GROUP", new ArrayList<BaseSearchField>()); //存放没有明确分组的条件
+        groups.put(DEFAULT_GROUP_NAME, new ArrayList<BaseSearchField>()); //存放没有明确分组的条件
 
         // 遍历所有的条件进行分组
         for (BaseSearchField searchField : conditions) {
             String groupName = searchField.getBracketsGroup();
 
             if (StringUtils.isEmpty(groupName)) { // 条件没有分组信息
-                groups.get("DEFAULT_NO_GROUP").add(searchField);
+                groups.get(DEFAULT_GROUP_NAME).add(searchField);
             } else { // 条件有分组信息
                 // 检查groups是否有此分组，有则用，没有则创建
                 if (groups.get(groupName) == null) {

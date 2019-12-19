@@ -8,11 +8,10 @@ import vip.efactory.common.i18n.enums.CommonEnum;
 import vip.efactory.common.i18n.enums.ErrorCodeUtil;
 import vip.efactory.common.i18n.enums.IBaseErrorEnum;
 
-
 import java.io.Serializable;
 
 /**
- * Description:响应的实体类
+ * Description:响应的实体类,直接返回硬编码文本信息的都不建议使用，这样会破坏国际化
  *
  * @author dbdu
  */
@@ -55,6 +54,8 @@ public class R<T> implements Serializable {
         return genr(data, CommonEnum.SUCCESS);
     }
 
+    // 使用此方法会导致，msg信息无法国际化，慎重使用！
+    @Deprecated
     public static <T> R<T> ok(T data, String msg) {
         return genr(data, CommonEnum.SUCCESS.getErrorCode(), msg);
     }
@@ -64,6 +65,7 @@ public class R<T> implements Serializable {
         return genr(CommonEnum.ERROR);
     }
 
+    @Deprecated
     public static <T> R<T> error(String msg) {
         return genr(null, CommonEnum.ERROR.getErrorCode(), msg);
     }
@@ -73,10 +75,12 @@ public class R<T> implements Serializable {
         return genr(null, CommonEnum.ERROR.getErrorCode(), e.getMessage());
     }
 
+    @Deprecated
     public static <T> R<T> error(int code, String msg) {
         return genr(null, code, msg);
     }
 
+    @Deprecated
     public static <T> R<T> error(int code, T data, String msg) {
         return genr(data, code, msg);
     }
@@ -90,27 +94,34 @@ public class R<T> implements Serializable {
      * @return R
      * @author dbdu
      */
-    public static <T> R<T> error(IBaseErrorEnum errorEnum) {
-        if (null != errorEnum) {
-            return R.error(errorEnum.getErrorCode(), errorEnum.getReason());
-        }
-        return R.error();
-    }
-
-    /**
-     * Description:使用国际化的枚举信息
-     *
-     * @param errorEnum 指定的错误类型枚举
-     * @param args      可选的替换占位符的参数
-     * @return R
-     * @author dbdu
-     */
-    public static <T> R<T> i18nError(IBaseErrorEnum errorEnum, String... args) {
+    public static <T> R<T> error(IBaseErrorEnum errorEnum, String... args) {
         if (null != errorEnum) {
             return R.error(errorEnum.getErrorCode(), ErrorCodeUtil.getMessage(errorEnum, args));
         }
-        return R.error();
+        return genr(CommonEnum.ERROR);
     }
+
+    public static <T> R<T> error(T data, IBaseErrorEnum errorEnum, String... args) {
+        if (null != errorEnum) {
+            return genr(data, errorEnum, args);
+        }
+        return genr(data, CommonEnum.ERROR);
+    }
+
+//    /**
+//     * Description:使用国际化的枚举信息
+//     *
+//     * @param errorEnum 指定的错误类型枚举
+//     * @param args      可选的替换占位符的参数
+//     * @return R
+//     * @author dbdu
+//     */
+//    public static <T> R<T> i18nError(IBaseErrorEnum errorEnum, String... args) {
+//        if (null != errorEnum) {
+//            return R.error(errorEnum.getErrorCode(), ErrorCodeUtil.getMessage(errorEnum, args));
+//        }
+//        return R.error();
+//    }
 
     /**
      * 生成响应对象r，
@@ -119,8 +130,10 @@ public class R<T> implements Serializable {
      * @param <T>            数据的泛型类型
      * @return R 响应的对象包装
      */
-    private static <T> R<T> genr(IBaseErrorEnum errorEnum) {
-        return genr(null, errorEnum.getErrorCode(), errorEnum.getReason());
+    private static <T> R<T> genr(IBaseErrorEnum errorEnum, String... args) {
+//        return genr(null, errorEnum.getErrorCode(), errorEnum.getReason());
+        // 使用国际化的信息
+        return genr(null, errorEnum.getErrorCode(), ErrorCodeUtil.getMessage(errorEnum, args));
     }
 
     /**
@@ -131,8 +144,8 @@ public class R<T> implements Serializable {
      * @param <T>            数据的泛型类型
      * @return R 响应的对象包装
      */
-    private static <T> R<T> genr(T data, IBaseErrorEnum errorEnum) {
-        return genr(data, errorEnum.getErrorCode(), errorEnum.getReason());
+    private static <T> R<T> genr(T data, IBaseErrorEnum errorEnum, String... args) {
+        return genr(data, errorEnum.getErrorCode(), ErrorCodeUtil.getMessage(errorEnum, args));
     }
 
     /**
