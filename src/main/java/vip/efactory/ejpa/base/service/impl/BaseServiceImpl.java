@@ -453,7 +453,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     }
 
     /**
-     * 处理只有一个查询条件的查询条件转换
+     * 处理同一个组内查询条件的查询条件转换
      */
     private Specification<T> handleSingleGroupCondition(List<BaseSearchField> fields, T entity) {
 
