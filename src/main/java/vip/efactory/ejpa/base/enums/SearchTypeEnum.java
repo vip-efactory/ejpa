@@ -18,10 +18,10 @@ public enum SearchTypeEnum {
     LE(5, "小于等于查询"),
     GT(6, "大于查询"),
     GE(7, "大于等于查询"),
-    IS_NULL(8, "Null值查询"),
-    NOT_NULL(9, "非Null值查询"),
-    LEFT_LIKE(10, "左模糊查询"),
-    RIGHT_LIKE(11, "右模糊查询"),
+    IS_NULL(8, "Null值查询"),       // 3.0+
+    NOT_NULL(9, "非Null值查询"),    // 3.0+
+    LEFT_LIKE(10, "左模糊查询"),    // 3.0+
+    RIGHT_LIKE(11, "右模糊查询"),   // 3.0+
     ;
 
     // 枚举值

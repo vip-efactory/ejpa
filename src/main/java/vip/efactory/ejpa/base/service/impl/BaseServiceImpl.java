@@ -436,14 +436,22 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     if (DEFAULT_GROUP_NAME.equalsIgnoreCase(entry.getKey())) {
                         continue;
                     }
+
                     Predicate tmpGroupP = genPredicate4SingleGroup(entry.getValue(), root, cb, entity);
+                    if (tmpGroupP == null) { // 若也为空则没有必要继续进行了！
+                        continue;
+                    }
 
                     // 从组内的一个条件里找到组的逻辑关系
-                    Integer logicalTypeGroup = entry.getValue().get(0).getLogicalTypeGroup();
-                    if (logicalTypeGroup == ConditionRelationEnum.AND.getValue()) {
-                        defaultGroupP = cb.and(defaultGroupP, tmpGroupP);
+                    if (defaultGroupP == null) { // 当默认组条件为空时，defaultGroupP为null，不处理会导致空指针异常！
+                        defaultGroupP = tmpGroupP;
                     } else {
-                        defaultGroupP = cb.or(defaultGroupP, tmpGroupP);
+                        Integer logicalTypeGroup = entry.getValue().get(0).getLogicalTypeGroup();
+                        if (logicalTypeGroup == ConditionRelationEnum.AND.getValue()) {
+                            defaultGroupP = cb.and(defaultGroupP, tmpGroupP);
+                        } else {
+                            defaultGroupP = cb.or(defaultGroupP, tmpGroupP);
+                        }
                     }
                 }
 
