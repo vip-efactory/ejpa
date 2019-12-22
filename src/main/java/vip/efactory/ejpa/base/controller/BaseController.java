@@ -189,6 +189,11 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * @author dbdu
      */
     public R updateById(T1 entity) {
+        // 使用id更新，则ID不允许为空！
+        if (null == entity.getId()) {
+            return R.error(CommDBEnum.KEY_NOT_NULL);
+        }
+        // 检查实体的属性是否符合校验规则
         Map<String, String> errors = ValidateModelUtil.validateModel(entity);
 
         if (!errors.isEmpty()) {
@@ -232,8 +237,14 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
         }
 
         //进行关联性检查,调用对应的方法
+        // 在删除前用id到数据库查询一次,不执行空删除，不检查就可能会在数据库层面报错，尽量不让用户见到看不懂的信息
+        Optional entity = entityService.findById(id);
+        if (!entity.isPresent()){
+            return R.error(CommDBEnum.DELETE_NON_EXISTENT);
+        }
+
         try {
-            this.entityService.deleteById(id);
+            this.entityService.deleteById(id); // 关联关系可以在service层重写实现
         } catch (Exception e) {
             return R.error(e.getMessage());
         }
@@ -253,9 +264,8 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
             return R.ok();
         }
 
-        //进行关联性检查,调用对应的方法
         try {
-            this.entityService.deleteAllById(Arrays.asList(entityIds));
+            this.entityService.deleteAllById(Arrays.asList(entityIds)); // 关联关系可以在service层重写实现
         } catch (Exception e) {
             return R.error(e.getMessage());
         }
