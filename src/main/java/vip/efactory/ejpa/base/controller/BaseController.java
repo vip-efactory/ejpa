@@ -26,13 +26,13 @@ import java.util.*;
 
 /**
  * Description:这是一个基础的控制器基类，包含常见的基本的CRUD的请求的处理，其他特殊的方法通过子类继承实现。
- * T1,是操作的实体类，T2是对应的service接口类继承IBaseService
+ * T1,是操作的实体类，T2是对应的service接口类继承IBaseService,ID是主键的类型
  *
  * @author dbdu
  */
 @SuppressWarnings("all")
 @Slf4j
-public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
+public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> {
     /**
      * 处理国际化资源的组件
      */
@@ -146,8 +146,8 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      * @return java.lang.Object
      * @author dbdu
      */
-    public R getById(Long id) {
-        if (CommUtil.isEmptyLong(id)) {
+    public R getById(ID id) {
+        if (null == id) {
             return R.error(CommDBEnum.KEY_NOT_NULL);
         }
 
@@ -226,9 +226,9 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      * @return java.lang.Object
      * @author dbdu
      */
-    public R deleteById(Long id) {
-        if (CommUtil.isEmptyLong(id)) {
-            return R.ok();
+    public R deleteById(ID id) {
+        if (null == id) {
+            return R.error(CommDBEnum.KEY_NOT_NULL);
         }
 
         //进行关联性检查,调用对应的方法
@@ -248,7 +248,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      * @return java.lang.Object
      * @author dbdu
      */
-    public R deleteByIds(Long[] entityIds) {
+    public R deleteByIds(ID[] entityIds) {
         if (CommUtil.isEmptyArrary(entityIds)) {
             return R.ok();
         }
@@ -286,7 +286,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      * @return java.lang.String
      * @author dbdu
      */
-    public Boolean chkEntityIdExist(Long entityId) {
+    public Boolean chkEntityIdExist(ID entityId) {
         return null != entityId && entityService.existsById(entityId);
     }
 
@@ -316,7 +316,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService> {
      * @return java.lang.Boolean
      * @author dbdu
      */
-    private Boolean chkEntityRelationship(Long entityId) {
+    private Boolean chkEntityRelationship(ID entityId) {
         return false;
     }
 
