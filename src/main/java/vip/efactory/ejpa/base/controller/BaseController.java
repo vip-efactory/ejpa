@@ -14,6 +14,7 @@ import vip.efactory.ejpa.base.entity.BaseEntity;
 import vip.efactory.ejpa.base.entity.BaseSearchField;
 import vip.efactory.ejpa.base.enums.SearchTypeEnum;
 import vip.efactory.ejpa.base.service.IBaseService;
+import vip.efactory.ejpa.base.valid.Update;
 import vip.efactory.ejpa.utils.CommUtil;
 import vip.efactory.ejpa.utils.R;
 import vip.efactory.ejpa.utils.UpdatePoUtil;
@@ -169,6 +170,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * @author dbdu
      */
     public R save(T1 entity) {
+        // 实体校验支持传递组规则，不传递则为Default组！
         Map<String, String> errors = ValidateModelUtil.validateModel(entity);
 
         if (!errors.isEmpty()) {
@@ -189,12 +191,8 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * @author dbdu
      */
     public R updateById(T1 entity) {
-        // 使用id更新，则ID不允许为空！
-        if (null == entity.getId()) {
-            return R.error(CommDBEnum.KEY_NOT_NULL);
-        }
-        // 检查实体的属性是否符合校验规则
-        Map<String, String> errors = ValidateModelUtil.validateModel(entity);
+        // 检查实体的属性是否符合校验规则，使用Update组来校验实体，
+        Map<String, String> errors = ValidateModelUtil.validateModel(entity, Update.class); // 可以传递多个校验组！
 
         if (!errors.isEmpty()) {
             return R.error(CommAPIEnum.PROPERTY_CHECK_FAILED).setData(errors);
@@ -239,7 +237,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
         //进行关联性检查,调用对应的方法
         // 在删除前用id到数据库查询一次,不执行空删除，不检查就可能会在数据库层面报错，尽量不让用户见到看不懂的信息
         Optional entity = entityService.findById(id);
-        if (!entity.isPresent()){
+        if (!entity.isPresent()) {
             return R.error(CommDBEnum.DELETE_NON_EXISTENT);
         }
 
@@ -272,6 +270,37 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
 
         return R.ok();
     }
+
+//    /**
+//     * 获取map结构的数据供UI页面选择使用，例如下拉选择的key-value，支持模糊查询key
+//     *
+//     * @param key   实体的哪个属性作为key
+//     * @param value 实体的哪个属性作为value
+//     * @param q  需要模糊查询的key值
+//     * @return R 响应体
+//     */
+//    public R map4PickLike(String key, String value, String q) {
+//        // 构造高级查询条件
+//
+//
+//        Map<Object, Object> map = new HashMap<>();
+//
+//
+//        return R.ok(map);
+//    }
+//
+//    /**
+//     * 获取map结构的数据供UI页面选择使用，例如下拉选择的key-value
+//     *
+//     * @param key   实体的哪个属性作为key
+//     * @param value 实体的哪个属性作为value
+//     * @return R 响应体
+//     */
+//    public R map4Pick(String key, String value) {
+//        // 构造高级查询条件
+//        Map<Object, Object> map = new HashMap<>();
+//        return R.ok(map);
+//    }
 
     /**
      * Description:根据实体编号检查实体是否存在,例如,员工工号可能不允许重复,此方法暂时没有使用

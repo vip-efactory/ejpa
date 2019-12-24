@@ -27,15 +27,15 @@ public class ValidateModelUtil {
     }
 
 
-    //验证某一个对象
-    public static Map<String, String> validateModel(Object obj) {
+    //验证某一个对象,可以指定激活哪个校验组，例如Update.class
+    public static Map<String, String> validateModel(Object obj,Class<?>... groups) {
 
         //用于存储验证后的错误信息
         Map<String, String> errors = new TreeMap<>();
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
         //验证某个对象,，其实也可以只验证其中的某一个属性的
-        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(obj);
+        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(obj, groups);
         Iterator<ConstraintViolation<Object>> iter = constraintViolations.iterator();
 
         while (iter.hasNext()) {
