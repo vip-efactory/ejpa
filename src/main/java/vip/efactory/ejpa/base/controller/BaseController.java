@@ -55,8 +55,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
 
     /**
      * Description:无参构造函数，获得T1的clazz对象
-     *
-     * @author dbdu
      */
     public BaseController() {
         //为了得到T1的Class，采用如下方法
@@ -75,12 +73,12 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * Description:实体的分页查询，包括排序等,使用SpringData自己的对象接收分页参数
      *
      * @param page 分页参数对象
-     * @return com.ddb.bss.utils.R
-     * @author dbdu
+     * @return R
      */
     public R getByPage(Pageable page) {
         Page<T1> entities = entityService.findAll(page);
-        return R.ok().setData(entities);
+        EPage ePage = new EPage(entities);
+        return R.ok().setData(ePage);
     }
 
     /**
@@ -88,20 +86,19 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      *
      * @param page   分页参数对象
      * @param entity 包含高级查询条件的实体
-     * @return com.ddb.bss.utils.R
-     * @author dbdu
+     * @return R
      */
     public R advancedQueryByPage(Pageable page, T1 entity) {
         Page<T1> entities = entityService.advancedQuery(entity, page);
-        return R.ok().setData(entities);
+        EPage ePage = new EPage(entities);
+        return R.ok().setData(ePage);
     }
 
     /**
      * Description: 高级查询不分页
      *
      * @param entity 包含高级查询条件的实体
-     * @return com.ddb.bss.utils.R
-     * @author dbdu
+     * @return R
      */
     public R advancedQuery(T1 entity) {
         List<T1> entities = entityService.advancedQuery(entity);
@@ -113,8 +110,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      *
      * @param q      模糊查询的值
      * @param fields 例如:"name,address,desc",对这三个字段进行模糊匹配
-     * @return com.ddb.bss.utils.R
-     * @author dbdu
+     * @return R
      */
     public R queryMutiField(String q, String fields) {
         // 构造高级查询条件
@@ -130,14 +126,14 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * @param q      模糊查询的值
      * @param fields 例如:"name,address,desc",对这三个字段进行模糊匹配
      * @param page   分页参数对象
-     * @return com.ddb.bss.utils.R
-     * @author dbdu
+     * @return R
      */
     public R queryMutiField(String q, String fields, Pageable page) {
         // 构造高级查询条件
         T1 be = buildQueryConditions(q, fields);
         Page<T1> entities = entityService.advancedQuery(be, page);
-        return R.ok().setData(entities);
+        EPage ePage = new EPage(entities);
+        return R.ok().setData(ePage);
     }
 
     /**
@@ -145,7 +141,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      *
      * @param id 主键
      * @return java.lang.Object
-     * @author dbdu
      */
     public R getById(ID id) {
         if (null == id) {
@@ -166,8 +161,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * Description:保存一个实体，保存之前会做检查
      *
      * @param entity 要保存的实体对象
-     * @return java.lang.Object
-     * @author dbdu
+     * @return R
      */
     public R save(T1 entity) {
         // 实体校验支持传递组规则，不传递则为Default组！
@@ -184,11 +178,9 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     }
 
     /**
-     * Description:使用id来更新,如果属性空值,则不更新现有的值
-     *
-     * @param entity 要更新的实体对象
-     * @return com.ddb.bss.utils.R
-     * @author dbdu
+     * 使用id来更新,如果属性空值,则不更新现有的值
+     * @param entity
+     * @return R
      */
     public R updateById(T1 entity) {
         // 检查实体的属性是否符合校验规则，使用Update组来校验实体，
@@ -227,7 +219,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      *
      * @param id 使用主键id
      * @return java.lang.Object
-     * @author dbdu
      */
     public R deleteById(ID id) {
         if (null == id) {
@@ -255,7 +246,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      *
      * @param entityIds 使用主键数组集合
      * @return java.lang.Object
-     * @author dbdu
      */
     public R deleteByIds(ID[] entityIds) {
         if (CommUtil.isEmptyArrary(entityIds)) {
@@ -271,14 +261,14 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
         return R.ok();
     }
 
-//    /**
-//     * 获取map结构的数据供UI页面选择使用，例如下拉选择的key-value，支持模糊查询key
-//     *
-//     * @param key   实体的哪个属性作为key
-//     * @param value 实体的哪个属性作为value
-//     * @param q  需要模糊查询的key值
-//     * @return R 响应体
-//     */
+    /**
+     * 获取map结构的数据供UI页面选择使用，例如下拉选择的key-value，支持模糊查询key
+     *
+     * @param key   实体的哪个属性作为key
+     * @param value 实体的哪个属性作为value
+     * @param q  需要模糊查询的key值
+     * @return R 响应体
+     */
 //    public R map4PickLike(String key, String value, String q) {
 //        // 构造高级查询条件
 //
@@ -288,14 +278,14 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
 //
 //        return R.ok(map);
 //    }
-//
-//    /**
-//     * 获取map结构的数据供UI页面选择使用，例如下拉选择的key-value
-//     *
-//     * @param key   实体的哪个属性作为key
-//     * @param value 实体的哪个属性作为value
-//     * @return R 响应体
-//     */
+
+    /**
+     * 获取map结构的数据供UI页面选择使用，例如下拉选择的key-value
+     *
+     * @param key   实体的哪个属性作为key
+     * @param value 实体的哪个属性作为value
+     * @return R 响应体
+     */
 //    public R map4Pick(String key, String value) {
 //        // 构造高级查询条件
 //        Map<Object, Object> map = new HashMap<>();
@@ -308,7 +298,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * @param entityNum 实体编号
      * @param flag      更新还是新增
      * @return java.lang.String
-     * @author dbdu
      */
     public String chkEntityExist(String entityNum, String flag) {
         if (CommUtil.isEmptyString(entityNum)) {
@@ -323,7 +312,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      *
      * @param entityId 实体主键id
      * @return java.lang.String
-     * @author dbdu
      */
     public Boolean chkEntityIdExist(ID entityId) {
         return null != entityId && entityService.existsById(entityId);
@@ -353,7 +341,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      *
      * @param entity 实体
      * @return java.lang.Boolean
-     * @author dbdu
      */
     private Boolean chkEntityRelationship(ID entityId) {
         return false;
@@ -384,7 +371,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * @param q      查询额值
      * @param fields 需要模糊匹配的字段
      * @return com.ddb.bss.base.entity.BaseEntity
-     * @author dbdu
      */
     @SneakyThrows
     private T1 buildQueryConditions(String q, String fields) {
