@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import vip.efactory.common.i18n.enums.CommAPIEnum;
 import vip.efactory.common.i18n.enums.CommDBEnum;
@@ -242,18 +243,18 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
     }
 
     /**
-     * Description:使用id数组来删除指定的实体
+     * Description:使用id的Set集合来删除指定的实体，不使用数组防止存在重复的数据
      *
-     * @param entityIds 使用主键数组集合
+     * @param entityIds 使用主键Set集合
      * @return java.lang.Object
      */
-    public R deleteByIds(ID[] entityIds) {
-        if (CommUtil.isEmptyArrary(entityIds)) {
+    public R deleteByIds(Set<ID> entityIds) {
+        if (CollectionUtils.isEmpty(entityIds)) {
             return R.ok();
         }
 
         try {
-            this.entityService.deleteAllById(Arrays.asList(entityIds)); // 关联关系可以在service层重写实现
+            this.entityService.deleteAllById(entityIds); // 关联关系可以在service层重写实现
         } catch (Exception e) {
             return R.error(e.getMessage());
         }
