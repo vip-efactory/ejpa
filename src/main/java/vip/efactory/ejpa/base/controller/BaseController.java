@@ -15,12 +15,14 @@ import vip.efactory.ejpa.base.entity.BaseEntity;
 import vip.efactory.ejpa.base.entity.BaseSearchField;
 import vip.efactory.ejpa.base.enums.SearchTypeEnum;
 import vip.efactory.ejpa.base.service.IBaseService;
+import vip.efactory.ejpa.base.valid.Create;
 import vip.efactory.ejpa.base.valid.Update;
 import vip.efactory.ejpa.utils.CommUtil;
 import vip.efactory.ejpa.utils.R;
 import vip.efactory.ejpa.utils.UpdatePoUtil;
 import vip.efactory.ejpa.utils.ValidateModelUtil;
 
+import javax.validation.groups.Default;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -166,7 +168,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      */
     public R save(T1 entity) {
         // 实体校验支持传递组规则，不传递则为Default组！
-        Map<String, String> errors = ValidateModelUtil.validateModel(entity);
+        Map<String, String> errors = ValidateModelUtil.validateModel(entity, Default.class, Create.class);
 
         if (!errors.isEmpty()) {
             return R.error(CommAPIEnum.PROPERTY_CHECK_FAILED).setData(errors);
@@ -180,12 +182,13 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
 
     /**
      * 使用id来更新,如果属性空值,则不更新现有的值
+     *
      * @param entity
      * @return R
      */
     public R updateById(T1 entity) {
         // 检查实体的属性是否符合校验规则，使用Update组来校验实体，
-        Map<String, String> errors = ValidateModelUtil.validateModel(entity, Update.class); // 可以传递多个校验组！
+        Map<String, String> errors = ValidateModelUtil.validateModel(entity, Default.class, Update.class); // 可以传递多个校验组！
 
         if (!errors.isEmpty()) {
             return R.error(CommAPIEnum.PROPERTY_CHECK_FAILED).setData(errors);
