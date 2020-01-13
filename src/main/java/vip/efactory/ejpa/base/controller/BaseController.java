@@ -297,21 +297,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
 //    }
 
     /**
-     * Description:根据实体编号检查实体是否存在,例如,员工工号可能不允许重复,此方法暂时没有使用
-     *
-     * @param entityNum 实体编号
-     * @param flag      更新还是新增
-     * @return java.lang.String
-     */
-    public String chkEntityExist(String entityNum, String flag) {
-        if (CommUtil.isEmptyString(entityNum)) {
-            return null;
-        }
-        String msg = "";
-        return msg;
-    }
-
-    /**
      * Description:检查操作的实体的id是否存在，因为多人操作，可能被其他人删除了！
      *
      * @param entityId 实体主键id
@@ -337,17 +322,6 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
         }
 
         return R.ok(entityService.advanceSearchProperty(property, value));
-    }
-
-    /**
-     * Description:实体的关联性检查的方法。
-     * 如果存在关联性则返回true,否则返回false,这个方法只是模板，需要子类重,暂时没有使用
-     *
-     * @param entity 实体
-     * @return java.lang.Boolean
-     */
-    private Boolean chkEntityRelationship(ID entityId) {
-        return false;
     }
 
     /**
