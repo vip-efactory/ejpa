@@ -506,17 +506,27 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                         fieldP = cb.equal(root.get(key), startVal);
                     }
                     break;
-                case 2:     //  RANGE(2, "范围查询"),
+                case 2:     //  RANGE(2, "范围查询"),  如果结束值大于开始值，则交换位置避免查不到数据
                     if (fieldType.equalsIgnoreCase("Long")) {
-                        fieldP = cb.between(root.<Long>get(key), Long.valueOf(startVal), Long.valueOf(endVal));
+                        Long start = Long.valueOf(startVal);
+                        Long end = Long.valueOf(endVal);
+                        fieldP = end >= start ? cb.between(root.<Long>get(key), start, end) : cb.between(root.<Long>get(key), end, start);
                     } else if (fieldType.equalsIgnoreCase("int") || fieldType.equalsIgnoreCase("Integer")) {
-                        fieldP = cb.between(root.<Integer>get(key), Integer.valueOf(startVal), Integer.valueOf(endVal));
+                        Integer start = Integer.valueOf(startVal);
+                        Integer end = Integer.valueOf(endVal);
+                        fieldP = end >= start ? cb.between(root.<Integer>get(key), start, end) : cb.between(root.<Integer>get(key), end, start);
                     } else if (fieldType.equalsIgnoreCase("Double")) {
-                        fieldP = cb.between(root.<Double>get(key), Double.valueOf(startVal), Double.valueOf(endVal));
+                        Double start = Double.valueOf(startVal);
+                        Double end = Double.valueOf(endVal);
+                        fieldP = end >= start ? cb.between(root.<Double>get(key), start, end) : cb.between(root.<Double>get(key), end, start);
                     } else if (fieldType.equalsIgnoreCase("float")) {
-                        fieldP = cb.between(root.<Float>get(key), Float.valueOf(startVal), Float.valueOf(endVal));
+                        Float start = Float.valueOf(startVal);
+                        Float end = Float.valueOf(endVal);
+                        fieldP = end >= start ? cb.between(root.<Float>get(key), start, end) : cb.between(root.<Float>get(key), end, start);
                     } else if (fieldType.equalsIgnoreCase("Date")) {
-                        fieldP = cb.between(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal), DateTimeUtil.getDateFromString(endVal));
+                        Date start = DateTimeUtil.getDateFromString(startVal);
+                        Date end = DateTimeUtil.getDateFromString(endVal);
+                        fieldP = end.compareTo(start) > 0 ? cb.between(root.<Date>get(key), start, end) : cb.between(root.<Date>get(key), end, start);
                     } else {
                         fieldP = cb.between(root.get(key), startVal, endVal);
                     }
