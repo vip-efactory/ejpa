@@ -486,44 +486,115 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
             // 得到条件的搜索类型，若为空默认模糊搜索
             int searchType = field.getSearchType() == null ? 0 : field.getSearchType();
             String key = field.getName();
-            String val = field.getVal();      // 开始值
-            String val2 = field.getVal2();    // 结束值
-
+            String startVal = field.getVal();      // 开始值
+            String endVal = field.getVal2();    // 结束值
+            // 处理查询值的类型转换
+            String fieldType = getPropType(key, entity); //直接通过当前实体或者父类来获取属性的类型
             switch (searchType) {                   // cb支持更多的方法,此处仅使用常用的!
                 case 1:     //  EQ(1, "等于查询"),
-                    fieldP = cb.equal(root.get(key), val);
+                    if (fieldType.equalsIgnoreCase("Long")) {
+                        fieldP = cb.equal(root.<Long>get(key), Long.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("int") || fieldType.equalsIgnoreCase("Integer")) {
+                        fieldP = cb.equal(root.<Integer>get(key), Integer.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Double")) {
+                        fieldP = cb.equal(root.<Double>get(key), Double.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("float")) {
+                        fieldP = cb.equal(root.<Float>get(key), Float.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                        fieldP = cb.equal(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                    } else {
+                        fieldP = cb.equal(root.get(key), startVal);
+                    }
                     break;
                 case 2:     //  RANGE(2, "范围查询"),
-                    // 此类型特殊,需要知道字段类型
-                    String fieldType = getPropType(key, entity); //直接通过当前实体或者父类来获取属性的类型
                     if (fieldType.equalsIgnoreCase("Long")) {
-                        fieldP = cb.between(root.<Long>get(key), Long.valueOf(val), Long.valueOf(val2));
+                        fieldP = cb.between(root.<Long>get(key), Long.valueOf(startVal), Long.valueOf(endVal));
                     } else if (fieldType.equalsIgnoreCase("int") || fieldType.equalsIgnoreCase("Integer")) {
-                        fieldP = cb.between(root.<Integer>get(key), Integer.valueOf(val), Integer.valueOf(val2));
+                        fieldP = cb.between(root.<Integer>get(key), Integer.valueOf(startVal), Integer.valueOf(endVal));
                     } else if (fieldType.equalsIgnoreCase("Double")) {
-                        fieldP = cb.between(root.<Double>get(key), Double.valueOf(val), Double.valueOf(val2));
+                        fieldP = cb.between(root.<Double>get(key), Double.valueOf(startVal), Double.valueOf(endVal));
                     } else if (fieldType.equalsIgnoreCase("float")) {
-                        fieldP = cb.between(root.<Float>get(key), Float.valueOf(val), Float.valueOf(val2));
+                        fieldP = cb.between(root.<Float>get(key), Float.valueOf(startVal), Float.valueOf(endVal));
                     } else if (fieldType.equalsIgnoreCase("Date")) {
-                        fieldP = cb.between(root.<Date>get(key), DateTimeUtil.getDateFromString(val), DateTimeUtil.getDateFromString(val2));
+                        fieldP = cb.between(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal), DateTimeUtil.getDateFromString(endVal));
                     } else {
-                        log.warn("忽略未知的区间查询类型:" + fieldType);
+                        fieldP = cb.between(root.get(key), startVal, endVal);
                     }
                     break;
                 case 3:     //  NE(3, "不等于查询"),
-                    fieldP = cb.notEqual(root.get(key), val);
+                    if (fieldType.equalsIgnoreCase("Long")) {
+                        fieldP = cb.notEqual(root.<Long>get(key), Long.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("int") || fieldType.equalsIgnoreCase("Integer")) {
+                        fieldP = cb.notEqual(root.<Integer>get(key), Integer.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Double")) {
+                        fieldP = cb.notEqual(root.<Double>get(key), Double.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("float")) {
+                        fieldP = cb.notEqual(root.<Float>get(key), Float.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                        fieldP = cb.notEqual(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                    } else {
+                        fieldP = cb.notEqual(root.get(key), startVal);
+                    }
                     break;
                 case 4:     //  LT(4, "小于查询"),
-                    fieldP = cb.lessThan(root.get(key), val);
+                    if (fieldType.equalsIgnoreCase("Long")) {
+                        fieldP = cb.lessThan(root.<Long>get(key), Long.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("int") || fieldType.equalsIgnoreCase("Integer")) {
+                        fieldP = cb.lessThan(root.<Integer>get(key), Integer.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Double")) {
+                        fieldP = cb.lessThan(root.<Double>get(key), Double.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("float")) {
+                        fieldP = cb.lessThan(root.<Float>get(key), Float.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                        fieldP = cb.lessThan(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                    } else {
+                        fieldP = cb.lessThan(root.get(key), startVal);
+                    }
                     break;
                 case 5:     //  LE(5, "小于等于查询"),
-                    fieldP = cb.lessThanOrEqualTo(root.get(key), val);
+                    if (fieldType.equalsIgnoreCase("Long")) {
+                        fieldP = cb.lessThanOrEqualTo(root.<Long>get(key), Long.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("int") || fieldType.equalsIgnoreCase("Integer")) {
+                        fieldP = cb.lessThanOrEqualTo(root.<Integer>get(key), Integer.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Double")) {
+                        fieldP = cb.lessThanOrEqualTo(root.<Double>get(key), Double.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("float")) {
+                        fieldP = cb.lessThanOrEqualTo(root.<Float>get(key), Float.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                        fieldP = cb.lessThanOrEqualTo(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                    } else {
+                        fieldP = cb.lessThanOrEqualTo(root.get(key), startVal);
+                    }
                     break;
                 case 6:     //  GT(6, "大于查询"),
-                    fieldP = cb.greaterThan(root.get(key), val);
+                    if (fieldType.equalsIgnoreCase("Long")) {
+                        fieldP = cb.greaterThan(root.<Long>get(key), Long.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("int") || fieldType.equalsIgnoreCase("Integer")) {
+                        fieldP = cb.greaterThan(root.<Integer>get(key), Integer.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Double")) {
+                        fieldP = cb.greaterThan(root.<Double>get(key), Double.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("float")) {
+                        fieldP = cb.greaterThan(root.<Float>get(key), Float.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                        fieldP = cb.greaterThan(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                    } else {
+                        fieldP = cb.greaterThan(root.get(key), startVal);
+                    }
                     break;
                 case 7:     //  GE(7, "大于等于查询");
-                    fieldP = cb.greaterThanOrEqualTo(root.get(key), val);
+                    if (fieldType.equalsIgnoreCase("Long")) {
+                        fieldP = cb.greaterThanOrEqualTo(root.<Long>get(key), Long.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("int") || fieldType.equalsIgnoreCase("Integer")) {
+                        fieldP = cb.greaterThanOrEqualTo(root.<Integer>get(key), Integer.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Double")) {
+                        fieldP = cb.greaterThanOrEqualTo(root.<Double>get(key), Double.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("float")) {
+                        fieldP = cb.greaterThanOrEqualTo(root.<Float>get(key), Float.valueOf(startVal));
+                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                        fieldP = cb.greaterThanOrEqualTo(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                    } else {
+                        fieldP = cb.greaterThanOrEqualTo(root.get(key), startVal);
+                    }
                     break;
                 case 8:     // IS_NULL(8, "Null值查询"),
                     fieldP = cb.isNull(root.get(key));
@@ -532,14 +603,14 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     fieldP = cb.isNotNull(root.get(key));
                     break;
                 case 10:     // LEFT_LIKE(10, "左模糊查询"),
-                    fieldP = cb.like(root.get(key), "%" + val);
+                    fieldP = cb.like(root.get(key), "%" + startVal);
                     break;
                 case 11:     // RIGHT_LIKE(11, "右模糊查询")
-                    fieldP = cb.like(root.get(key), val + "%");
+                    fieldP = cb.like(root.get(key), startVal + "%");
                     break;
                 default:
                     // 0 或其他情况,则为模糊查询,FUZZY(0, "模糊查询"),
-                    fieldP = cb.like(root.get(key), "%" + val + "%");
+                    fieldP = cb.like(root.get(key), "%" + startVal + "%");
             }
 
             if (i == 0) { // 第一个直接赋值
