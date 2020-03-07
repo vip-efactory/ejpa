@@ -608,6 +608,13 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                 case 11:     // RIGHT_LIKE(11, "右模糊查询")
                     fieldP = cb.like(root.get(key), startVal + "%");
                     break;
+                case 12:     // IN(12, "包含查询"),   // 3.4+
+                    // 切分属性值为集合
+                    String[] values = startVal.split(",|;|、|，|；"); // 支持的分隔符：中英文的逗号分号，和中文的顿号！
+                    List valueList = Arrays.asList(values);
+                    CriteriaBuilder.In inQuery = cb.in(root.get(key));
+                    fieldP = inQuery.in(valueList);
+                    break;
                 default:
                     // 0 或其他情况,则为模糊查询,FUZZY(0, "模糊查询"),
                     fieldP = cb.like(root.get(key), "%" + startVal + "%");
@@ -659,7 +666,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         return groups;
     }
 
-//    public static void main(String[] args) {
+    public static void main(String[] args) {
 //        Set<BaseSearchField> conditions = new HashSet<BaseSearchField>();
 //        for (int i = 0; i < 15; i++) {
 //            BaseSearchField condition = new BaseSearchField();
@@ -673,6 +680,10 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 //        fields.sort(Comparator.comparingInt(BaseSearchField::getOrder));  // 条件排序
 //        System.out.println(fields);
 //
-//    }
+//        String val = "AA,BB;CC、DD；EE，FF";
+//        String[] tmp = val.split(",|;|、|，|；");
+//        System.out.println(tmp);
+
+    }
 
 }

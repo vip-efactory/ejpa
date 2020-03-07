@@ -22,6 +22,7 @@ public enum SearchTypeEnum {
     NOT_NULL(9, "非Null值查询"),    // 3.0+
     LEFT_LIKE(10, "左模糊查询"),    // 3.0+
     RIGHT_LIKE(11, "右模糊查询"),   // 3.0+
+    IN(12, "包含查询"),             // 3.4+ ,内置暂不支持not in查询！
     ;
 
     // 枚举值
