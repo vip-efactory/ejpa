@@ -621,9 +621,19 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                 case 12:     // IN(12, "包含查询"),   // 3.4+
                     // 切分属性值为集合
                     String[] values = startVal.split(",|;|、|，|；"); // 支持的分隔符：中英文的逗号分号，和中文的顿号！
-                    List valueList = Arrays.asList(values);
-                    CriteriaBuilder.In inQuery = cb.in(root.get(key));
-                    fieldP = inQuery.in(valueList);
+                    List<String> valueList = Arrays.asList(values);
+                    // 日期类型特殊处理
+                    if (fieldType.equalsIgnoreCase("Date")) {
+                        List<Date> valueDateList = new ArrayList<>();
+                        valueList.forEach(v -> {
+                            valueDateList.add(DateTimeUtil.getDateFromString(v));
+                        });
+                        Expression<Date> exp = root.<Date>get(key);
+                        fieldP = exp.in(valueDateList);
+                    } else {
+                        Expression exp = root.get(key);
+                        fieldP = exp.in(valueList);
+                    }
                     break;
                 default:
                     // 0 或其他情况,则为模糊查询,FUZZY(0, "模糊查询"),
