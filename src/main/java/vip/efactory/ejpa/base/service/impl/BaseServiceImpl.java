@@ -613,10 +613,10 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     fieldP = cb.isNotNull(root.get(key));
                     break;
                 case 10:     // LEFT_LIKE(10, "左模糊查询"),
-                    fieldP = cb.like(root.get(key), "%" + startVal);
+                    fieldP = cb.like(root.get(key).as(String.class), "%" + startVal);
                     break;
                 case 11:     // RIGHT_LIKE(11, "右模糊查询")
-                    fieldP = cb.like(root.get(key), startVal + "%");
+                    fieldP = cb.like(root.get(key).as(String.class), startVal + "%");
                     break;
                 case 12:     // IN(12, "包含查询"),   // 3.4+
                     // 切分属性值为集合
@@ -637,7 +637,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     break;
                 default:
                     // 0 或其他情况,则为模糊查询,FUZZY(0, "模糊查询"),
-                    fieldP = cb.like(root.get(key), "%" + startVal + "%");
+                    fieldP = cb.like(root.get(key).as(String.class), "%" + startVal + "%");
             }
 
             if (i == 0) { // 第一个直接赋值
