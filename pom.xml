@@ -5,7 +5,7 @@
 
     <groupId>vip.efactory</groupId>
     <artifactId>ejpa</artifactId>
-    <version>3.4.0</version>
+    <version>3.5.0</version>
     <packaging>jar</packaging>
     <name>ejpa</name>
     <description>基于jpa再封装,常用的模板CRUD,分页排序,多字段高级搜索等功能</description>
@@ -17,6 +17,7 @@
         <swagger-starter.version>1.9.0.RELEASE</swagger-starter.version>
         <lombok.version>1.18.10</lombok.version>
         <common.i18n.version>1.1.0</common.i18n.version>
+        <ali.ttl.version>2.11.4</ali.ttl.version>
     </properties>
 
     <dependencies>
@@ -41,13 +42,12 @@
             <version>${spring.boot.version}</version>
             <optional>true</optional>
         </dependency>
-
-        <!-- MySQL JDBC驱动  -->
-<!--        <dependency>-->
-<!--            <groupId>mysql</groupId>-->
-<!--            <artifactId>mysql-connector-java</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
+        <!-- 阿里的本地线程安全存储 保存租户信息使用 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
+            <version>${ali.ttl.version}</version>
+        </dependency>
 
         <!-- 引入国际化的依赖 -->
         <dependency>
