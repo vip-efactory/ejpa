@@ -143,7 +143,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * Description:根据id获取一个实体的信息
      *
      * @param id 主键
-     * @return java.lang.Object
+     * @return R
      */
     public R getById(ID id) {
         if (null == id) {
@@ -222,7 +222,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * Description:使用id删除指定的实体
      *
      * @param id 使用主键id
-     * @return java.lang.Object
+     * @return R
      */
     public R deleteById(ID id) {
         if (null == id) {
@@ -249,7 +249,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * Description:使用id的Set集合来删除指定的实体，不使用数组防止存在重复的数据
      *
      * @param entityIds 使用主键Set集合
-     * @return java.lang.Object
+     * @return R
      */
     public R deleteByIds(Set<ID> entityIds) {
         if (CollectionUtils.isEmpty(entityIds)) {
@@ -297,10 +297,10 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
 //    }
 
     /**
-     * Description:检查操作的实体的id是否存在，因为多人操作，可能被其他人删除了！
+     * Description:检查操作的idd对应实体是否存在，因为多人操作，可能被其他人删除了！
      *
      * @param entityId 实体主键id
-     * @return java.lang.String
+     * @return Boolean
      */
     public Boolean chkEntityIdExist(ID entityId) {
         return null != entityId && entityService.existsById(entityId);

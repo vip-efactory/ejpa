@@ -36,6 +36,11 @@ public enum SearchTypeEnum {
         this.desc = desc;
     }
 
+    /**
+     * 这个方法目前没有用到
+     * @param value
+     * @return
+     */
     public static SearchTypeEnum getByValue(int value) {
         switch (value) {
             case 1:
@@ -52,11 +57,20 @@ public enum SearchTypeEnum {
                 return GT;
             case 7:
                 return GE;
+            case 8:
+                return IS_NULL;
+            case 9:
+                return NOT_NULL;
+            case 10:
+                return LEFT_LIKE;
+            case 11:
+                return RIGHT_LIKE;
+            case 12:
+                return IN;
             default:
                 // 0 或其他情况,则为模糊查询
                 return FUZZY;
         }
-
 
     }
 
