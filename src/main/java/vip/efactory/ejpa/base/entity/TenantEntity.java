@@ -16,13 +16,7 @@ import javax.persistence.MappedSuperclass;
 //@Table(name = "sys_tenant")
 public abstract class TenantEntity<ID> extends BaseEntity<ID> {
 
-    // 主键的定义留给子类，这样子类也可以进行字段扩展
-
-    /**
-     * 租户的ID，例如：0L
-     */
-    @Column(name = "tenant_id")
-    private Long tenantId;
+    // 租户的ID，例如：0L,主键的定义留给子类，这样子类也可以进行字段扩展
 
     /**
      * 租户的名称,例如：电子工厂有限公司
