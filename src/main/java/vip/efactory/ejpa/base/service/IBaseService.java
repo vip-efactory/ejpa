@@ -235,7 +235,7 @@ public interface IBaseService<T extends BaseEntity, ID> {
      * @return int
      * @author dbdu
      */
-    int deleteAllById(Iterable<ID> var1);
+//    int deleteAllById(Iterable<ID> var1);
 
     /**
      * Description:更新实体的方法，很多时候保存和更新的处理逻辑是不一样的，权限也是不一样的，所以单独分开
