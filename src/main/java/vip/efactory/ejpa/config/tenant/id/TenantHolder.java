@@ -22,7 +22,8 @@ public class TenantHolder {
      * 获取租户信息
      */
     public Long getTenantId() {
-        return LOCAL_TENANT.get();
+        return LOCAL_TENANT.get() == null ? TenantConstants.DEFAULT_TENANT_ID : LOCAL_TENANT.get();
+//        return LOCAL_TENANT.get();
     }
 
     /**

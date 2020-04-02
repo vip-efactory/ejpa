@@ -12,7 +12,7 @@ public class MultiTenantIdentifierResolver implements CurrentTenantIdentifierRes
     // 获取tenantId的逻辑在这个方法里面写
     @Override
     public String resolveCurrentTenantIdentifier() {
-        if (!"".equals(TenantHolder.getTenantId())) {
+        if (!"".equals(TenantHolder.getTenantId().toString())) {
             return TenantHolder.getTenantId().toString();
         }
         return TenantConstants.DEFAULT_TENANT_ID.toString();

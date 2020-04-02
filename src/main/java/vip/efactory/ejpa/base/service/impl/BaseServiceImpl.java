@@ -22,6 +22,7 @@ import vip.efactory.ejpa.utils.MapUtil;
 import vip.efactory.ejpa.utils.SQLFilter;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.*;
 import java.lang.reflect.Field;
@@ -69,7 +70,8 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         // numberTypeList.add("LongAdder");
     }
 
-    @Autowired
+//    @Autowired
+    @PersistenceContext(unitName = "TENANT-0")
     EntityManager em;
 
     /**
