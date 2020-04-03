@@ -21,6 +21,9 @@ import vip.efactory.ejpa.utils.DateTimeUtil;
 import vip.efactory.ejpa.utils.MapUtil;
 import vip.efactory.ejpa.utils.SQLFilter;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -66,10 +69,9 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         // numberTypeList.add("LongAccumulator");
         // numberTypeList.add("LongAdder");
     }
-//   多租户环境下无法做到动态注入，因此注释掉，使用JPA框架提供的功能。这个模板是所有的租户都要用，但是注入却是一个，矛盾了
-//    @Autowired
-//    @PersistenceContext(unitName = "TENANT-0")
-//    EntityManager em;
+
+    @PersistenceContext
+    EntityManager em;
 
     /**
      * Description:获取T的Class对象是关键，看构造方法
@@ -239,14 +241,14 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         return resultSet.size() > 0 ? true : false;
     }
 
-//    @Override
-//    public int deleteAllById(Iterable<ID> var1) {
-//        String hql = "delete from " + clazz.getSimpleName() + " t where t.id in (?1)";
-//        Query query = em.createQuery(hql);
-//        query.setParameter(1, var1);
-//        int result = query.executeUpdate();
-//        return result;
-//    }
+    @Override
+    public int deleteAllById(Iterable<ID> var1) {
+        String hql = "delete from " + clazz.getSimpleName() + " t where t.id in (?1)";
+        Query query = em.createQuery(hql);
+        query.setParameter(1, var1);
+        int result = query.executeUpdate();
+        return result;
+    }
 
     @Override
     public <S extends T> S update(S var1) {

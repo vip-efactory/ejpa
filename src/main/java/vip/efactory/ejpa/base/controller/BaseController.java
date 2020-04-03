@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import vip.efactory.common.i18n.enums.CommAPIEnum;
 import vip.efactory.common.i18n.enums.CommDBEnum;
@@ -250,19 +251,19 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * @param entityIds 使用主键Set集合
      * @return R
      */
-//    public R deleteByIds(Set<ID> entityIds) {
-//        if (CollectionUtils.isEmpty(entityIds)) {
-//            return R.ok();
-//        }
-//
-//        try {
-//            this.entityService.deleteAllById(entityIds); // 关联关系可以在service层重写实现
-//        } catch (Exception e) {
-//            return R.error(e.getMessage());
-//        }
-//
-//        return R.ok();
-//    }
+    public R deleteByIds(Set<ID> entityIds) {
+        if (CollectionUtils.isEmpty(entityIds)) {
+            return R.ok();
+        }
+
+        try {
+            this.entityService.deleteAllById(entityIds); // 关联关系可以在service层重写实现
+        } catch (Exception e) {
+            return R.error(e.getMessage());
+        }
+
+        return R.ok();
+    }
 
     /**
      * 获取map结构的数据供UI页面选择使用，例如下拉选择的key-value，支持模糊查询key
