@@ -1,4 +1,4 @@
-package vip.efactory.ejpa.config.tenant.id;
+package vip.efactory.ejpa.tenant.identifier;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;

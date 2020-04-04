@@ -1,10 +1,10 @@
-package vip.efactory.ejpa.config.tenant;
+package vip.efactory.ejpa.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import vip.efactory.ejpa.config.tenant.id.MultiTenantInterceptor;
+import vip.efactory.ejpa.tenant.identifier.MultiTenantInterceptor;
 
 /**
  * 多租户配置类

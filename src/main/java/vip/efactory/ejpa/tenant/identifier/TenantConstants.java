@@ -1,4 +1,4 @@
-package vip.efactory.ejpa.config.tenant.id;
+package vip.efactory.ejpa.tenant.identifier;
 
 /**
  * 租户的相关常量定义

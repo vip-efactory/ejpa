@@ -1,4 +1,4 @@
-package vip.efactory.ejpa.tenant;
+package vip.efactory.ejpa.tenant.column;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
@@ -14,6 +14,10 @@ import java.io.Serializable;
 
 
 /**
+ * 包说明：
+ * column包里是基于列多租户模式用到的文件
+ * database包里是基于数据库及schema多租户模式用到的文件
+ * identifier包是多租户id信息的处理
  * 对于同库同表的多租户模式，可以让需要多租户支持的表实体继承本实体
  */
 @Getter

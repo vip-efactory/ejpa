@@ -1,7 +1,7 @@
-package vip.efactory.ejpa.config.tenant.ds;
+package vip.efactory.ejpa.tenant.database;
 
 import org.hibernate.engine.jdbc.connections.spi.AbstractDataSourceBasedMultiTenantConnectionProviderImpl;
-import vip.efactory.ejpa.config.tenant.id.TenantConstants;
+import vip.efactory.ejpa.tenant.identifier.TenantConstants;
 
 import javax.sql.DataSource;
 

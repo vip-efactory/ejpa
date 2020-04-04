@@ -1,8 +1,8 @@
-package vip.efactory.ejpa.config.tenant.ds;
+package vip.efactory.ejpa.tenant.database;
 
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
-import vip.efactory.ejpa.config.tenant.id.TenantConstants;
-import vip.efactory.ejpa.config.tenant.id.TenantHolder;
+import vip.efactory.ejpa.tenant.identifier.TenantConstants;
+import vip.efactory.ejpa.tenant.identifier.TenantHolder;
 
 /**
  * 这个类是由Hibernate提供的用于识别tenantId的类，当每次执行sql语句被拦截就会调用这个类中的方法来获取tenantId

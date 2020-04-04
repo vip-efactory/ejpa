@@ -1,4 +1,4 @@
-package vip.efactory.ejpa.config.tenant.id;
+package vip.efactory.ejpa.tenant.identifier;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.experimental.UtilityClass;

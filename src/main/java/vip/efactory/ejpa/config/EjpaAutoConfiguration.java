@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.PostConstruct;
 
 /**
- * Description:根据属性初始化配置类，同时定义对应切点和增强
- * 含有注解的方法为切入点，方法拦截器为增强
+ * Description:根据属性初始化配置类，可以在此处实例化一些配置类
+ *
  *
  * @author dbdu
  */

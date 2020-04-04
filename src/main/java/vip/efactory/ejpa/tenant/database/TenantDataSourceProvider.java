@@ -1,10 +1,10 @@
-package vip.efactory.ejpa.config.tenant.ds;
+package vip.efactory.ejpa.tenant.database;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import vip.efactory.ejpa.base.entity.TenantEntity;
-import vip.efactory.ejpa.config.tenant.id.TenantConstants;
+import vip.efactory.ejpa.tenant.identifier.TenantConstants;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
