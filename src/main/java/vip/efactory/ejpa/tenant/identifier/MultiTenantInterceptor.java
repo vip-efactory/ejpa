@@ -21,6 +21,7 @@ public class MultiTenantInterceptor extends HandlerInterceptorAdapter {
             TenantHolder.setTenantId(Long.parseLong(tenantId));
         } else {
             TenantHolder.setTenantId(TenantConstants.DEFAULT_TENANT_ID);
+            // 此处不进行抛出异常，为了兼容非多租户模式，没有就默认为租户0L
             log.info("当前请求中没有租户信息，使用默认的租户ID为:{}", TenantConstants.DEFAULT_TENANT_ID);
         }
         return true;
