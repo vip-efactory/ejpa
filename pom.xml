@@ -20,7 +20,7 @@
         <ali.ttl.version>2.11.4</ali.ttl.version>
         <querydsl.version>4.3.1</querydsl.version>
         <slf4j.version>1.7.30</slf4j.version>
-        <derby.version>10.15.2.0</derby.version>  <!-- queryDSL sql查询依赖插件 -->
+        <derby.version>10.13.1.1</derby.version>  <!-- queryDSL sql查询依赖插件 暂时不要升级版本，在最新版的Derby 10.15.x中，该驱动类不再存在 -->
     </properties>
 
     <dependencies>
@@ -218,7 +218,7 @@
                 <configuration>
                     <jdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</jdbcDriver>
                     <jdbcUrl>jdbc:derby:target/demoDB;create=true</jdbcUrl>
-                    <packageName>com.myproject.domain</packageName>
+                    <packageName>${project.groupId}.${project.artifactId}</packageName>
                     <targetFolder>${project.basedir}/target/generated-sources/java</targetFolder>
                     <sourceFolder/>
                 </configuration>
