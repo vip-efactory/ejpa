@@ -520,8 +520,11 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
             String key = field.getName();
             String startVal = field.getVal();      // 开始值
             String endVal = field.getVal2();    // 结束值
-            // 处理查询值的类型转换
-            String fieldType = getPropType(key, entity); //直接通过当前实体或者父类来获取属性的类型
+
+            // 获取keyPath查询路径,是级联属性就通过级联方法获取，否则通过属性获取
+            Path<T> keyPath = key.contains(".") ? getPathExpressionFromKey(key, root) : root.get(key);
+            // 处理查询值的类型,如果不是级联属性直接通过当前实体或者父类来获取属性的类型
+            String fieldType = key.contains(".") ? getFinalCascadingPropertyType(key) : getPropType(key, entity);
             switch (searchType) {                   // cb支持更多的方法,此处仅使用常用的!
                 case 1:     //  EQ(1, "等于查询"),
                     if (numberTypeList.contains(fieldType)) {
@@ -777,7 +780,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         } catch (NoSuchFieldException nsfe) {
             return false;
         }
-        if (propLength == 2){ // 没有c，例如只是a.b级联属性
+        if (propLength == 2) { // 没有c，例如只是a.b级联属性
             return true;
         }
 
@@ -790,7 +793,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         } catch (NoSuchFieldException nsfe) {
             return false;
         }
-        if (propLength == 3){ // 没有d，例如只是a.b.c级联属性
+        if (propLength == 3) { // 没有d，例如只是a.b.c级联属性
             return true;
         }
 
@@ -803,7 +806,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         } catch (NoSuchFieldException nsfe) {
             return false;
         }
-        if (propLength == 4){ // 没有e，例如只是a.b.c.d级联属性
+        if (propLength == 4) { // 没有e，例如只是a.b.c.d级联属性
             return true;
         }
 
@@ -817,6 +820,68 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
             return false;
         }
         return true;
+    }
+
+    /**
+     * 处理级联属性，转换a.b.c.d.e为对应的path
+     *
+     * @param key  是必须含有点的级联属性
+     * @param root
+     * @return
+     */
+    private Path<T> getPathExpressionFromKey(String key, Root<T> root) {
+        // 如Task的名为"user.name"的filedName, 转换为Task.user.name属性
+        String[] props = StringUtils.split(key, ".");
+        Path<T> expression = root.get(props[0]);
+        for (int i = 1; i < props.length; i++) {
+            expression = expression.get(props[i]);
+        }
+        return expression;
+    }
+
+    /**
+     * 获取级联属性的最终属性的数据类型，例如a.b.c的属性，那么将返回最终属性c的数据类型，如String/Date/Integer等的字符串
+     *
+     * @param key 是必须含有点的级联属性
+     * @return
+     */
+    @SneakyThrows
+    private String getFinalCascadingPropertyType(String key) {
+        // 用点切分属性
+        String[] props = key.split(".");
+        int propLength = props.length;
+        // a的属性反射字段类型
+        Field propTypeA = clazz.getDeclaredField(props[0]);
+        if (propLength == 1) { // 没有b，例如只是a属性,返回a的数据类型的字符串
+            return propTypeA.getType().getSimpleName();
+        }
+
+        // 得到a的clazz，检查b
+        Class clazzA = propTypeA.getType();
+        // 从a类型的clazz中检查b属性名是否存在
+        Field propTypeB = clazzA.getDeclaredField(props[1]);
+        if (propLength == 2) { // 没有c，例如只是a.b级联属性,返回b的数据类型的字符串
+            return propTypeB.getType().getSimpleName();
+        }
+
+        // 得到b的clazz，然后检查c
+        Class clazzB = propTypeB.getType();
+        Field propTypeC = clazzB.getDeclaredField(props[2]);
+        if (propLength == 3) { // 没有d，例如只是a.b.c级联属性，返回c的数据类型的字符串
+            return propTypeC.getType().getSimpleName();
+        }
+
+        // 得到c的clazz，然后检查d
+        Class clazzC = propTypeC.getType();
+        Field propTypeD = clazzC.getDeclaredField(props[3]);
+        if (propLength == 4) { // 没有e，例如只是a.b.c.d级联属性，返回d的数据类型的字符串
+            return propTypeD.getType().getSimpleName();
+        }
+
+        // 得到d的clazz，然后检查e
+        Class clazzD = propTypeD.getType();
+        Field propTypeE = clazzD.getDeclaredField(props[4]);
+        return propTypeE.getType().getSimpleName(); // 返回e的数据类型的字符串
     }
 
     public static void main(String[] args) {
