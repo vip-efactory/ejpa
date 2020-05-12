@@ -319,6 +319,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 
     /**
      * Description:检查属性名和属性值的合法性,不合法的属性和值都会被移除
+     * 支持级联属性，例如:a.b.c.d.e   最多5级关联，即4个级联点属性
      *
      * @param [entity]
      * @return void
@@ -337,7 +338,10 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         Set<String> keys = properties.keySet();
         // 如果条件的字段名称与属性名不符，则移除，不作为选择条件；
         conditions.forEach(condition -> {
-            if (!keys.contains(condition.getName())) {
+            // 条件的名称里不包含点，即级联属性，也不是查询类型的属性时为非法条件
+            if (!keys.contains(condition.getName()) && !condition.getName().contains(".")) {
+                illegalConditions.add(condition);
+            } else if (condition.getName().contains(".") && !validateCascadingProperty(condition.getName())) { // 含有类似 a.b.c这样的级联属性
                 illegalConditions.add(condition);
             }
         });
@@ -738,6 +742,81 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         } else {
             return null;
         }
+    }
+
+    /**
+     * 检查级联属性是否合法，例如：级联属性a.b.c.d.e各层是否都存在。  最多支持4个级联点,多于5个则认为不合法
+     *
+     * @param conditionName
+     * @return false 不合法; true 合法。
+     */
+    @SneakyThrows
+    private boolean validateCascadingProperty(String conditionName) {
+        // 用点切分属性
+        String[] props = conditionName.split(".");
+        // 多于5个则认为不合法
+        int propLength = props.length;
+        if (propLength > 5) {
+            return false;
+        }
+        // 检查切分出来的各层属性是否都存在
+        // 第1层属性a
+        if (isPropertyIllegal(props[0])) {
+            return false;
+        }
+        // a的属性反射字段类型
+        Field propTypeA = clazz.getDeclaredField(props[0]);
+
+        // 第2层属性b
+        // 得到a的clazz
+        Class clazzA = propTypeA.getType();
+        // 从a类型的clazz中检查b属性名是否存在
+        Field propTypeB;
+        try {
+            propTypeB = clazzA.getDeclaredField(props[1]);
+        } catch (NoSuchFieldException nsfe) {
+            return false;
+        }
+        if (propLength == 2){ // 没有c，例如只是a.b级联属性
+            return true;
+        }
+
+        // 第3层属性c
+        // 得到b的clazz，然后检查c
+        Class clazzB = propTypeB.getType();
+        Field propTypeC;
+        try {
+            propTypeC = clazzB.getDeclaredField(props[2]);
+        } catch (NoSuchFieldException nsfe) {
+            return false;
+        }
+        if (propLength == 3){ // 没有d，例如只是a.b.c级联属性
+            return true;
+        }
+
+        // 第4层属性d
+        // 得到c的clazz，然后检查d
+        Class clazzC = propTypeC.getType();
+        Field propTypeD;
+        try {
+            propTypeD = clazzC.getDeclaredField(props[3]);
+        } catch (NoSuchFieldException nsfe) {
+            return false;
+        }
+        if (propLength == 4){ // 没有e，例如只是a.b.c.d级联属性
+            return true;
+        }
+
+        // 第5层属性e
+        // 得到d的clazz，然后检查e
+        Class clazzD = propTypeD.getType();
+        Field propTypeE;
+        try {
+            propTypeE = clazzD.getDeclaredField(props[4]);
+        } catch (NoSuchFieldException nsfe) {
+            return false;
+        }
+        return true;
     }
 
     public static void main(String[] args) {
