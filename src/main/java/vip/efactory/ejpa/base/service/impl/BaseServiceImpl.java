@@ -528,84 +528,84 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
             switch (searchType) {                   // cb支持更多的方法,此处仅使用常用的!
                 case 1:     //  EQ(1, "等于查询"),
                     if (numberTypeList.contains(fieldType)) {
-                        fieldP = cb.equal(root.get(key), convertType4PropertyValue(fieldType, startVal));
+                        fieldP = cb.equal(keyPath, convertType4PropertyValue(fieldType, startVal));
                     } else if (fieldType.equalsIgnoreCase("Date")) {
-                        fieldP = cb.equal(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        fieldP = cb.equal(keyPath.as(Date.class), DateTimeUtil.getDateFromString(startVal));
                     } else {
-                        fieldP = cb.equal(root.get(key).as(String.class), startVal);
+                        fieldP = cb.equal(keyPath.as(String.class), startVal);
                     }
                     break;
                 case 2:     //  RANGE(2, "范围查询"),  如果结束值大于开始值，则交换位置避免查不到数据
                     if (numberTypeList.contains(fieldType)) {
-                        fieldP = getPredicate4NumberBetweenConditiong(root, cb, key, fieldType, startVal, endVal);
+                        fieldP = getPredicate4NumberBetweenConditiong(root, cb, keyPath, fieldType, startVal, endVal);
                     } else if (fieldType.equalsIgnoreCase("Date")) {
                         Date start = DateTimeUtil.getDateFromString(startVal);
                         Date end = DateTimeUtil.getDateFromString(endVal);
-                        fieldP = end.compareTo(start) > 0 ? cb.between(root.<Date>get(key), start, end) : cb.between(root.<Date>get(key), end, start);
+                        fieldP = end.compareTo(start) > 0 ? cb.between(keyPath.as(Date.class), start, end) : cb.between(keyPath.as(Date.class), end, start);
                     } else {
-                        fieldP = cb.between(root.get(key).as(String.class), startVal, endVal);
+                        fieldP = cb.between(keyPath.as(String.class), startVal, endVal);
                     }
                     break;
                 case 3:     //  NE(3, "不等于查询"),
                     if (numberTypeList.contains(fieldType)) {
-                        fieldP = cb.notEqual(root.get(key), convertType4PropertyValue(fieldType, startVal));
+                        fieldP = cb.notEqual(keyPath, convertType4PropertyValue(fieldType, startVal));
                     } else if (fieldType.equalsIgnoreCase("Date")) {
-                        fieldP = cb.notEqual(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        fieldP = cb.notEqual(keyPath.as(Date.class), DateTimeUtil.getDateFromString(startVal));
                     } else {
-                        fieldP = cb.notEqual(root.get(key), startVal);
+                        fieldP = cb.notEqual(keyPath, startVal);
                     }
                     break;
                 case 4:     //  LT(4, "小于查询"),
                     if (numberTypeList.contains(fieldType)) {
-                        // fieldP = cb.lessThan(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                        fieldP = cb.lt(root.get(key), convertType4PropertyValue(fieldType, startVal));
+//                        fieldP = cb.lessThan(keyPath, convertType4PropertyValue(fieldType, startVal));
+                        fieldP = cb.lt(keyPath.as(Number.class), convertType4PropertyValue(fieldType, startVal));
                     } else if (fieldType.equalsIgnoreCase("Date")) {
-                        fieldP = cb.lessThan(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        fieldP = cb.lessThan(keyPath.as(Date.class), DateTimeUtil.getDateFromString(startVal));
                     } else {
-                        fieldP = cb.lessThan(root.get(key).as(String.class), startVal);
+                        fieldP = cb.lessThan(keyPath.as(String.class), startVal);
                     }
                     break;
                 case 5:     //  LE(5, "小于等于查询"),
                     if (numberTypeList.contains(fieldType)) {
                         // fieldP = cb.lessThanOrEqualTo(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                        fieldP = cb.le(root.get(key), convertType4PropertyValue(fieldType, startVal));
+                        fieldP = cb.le(keyPath.as(Number.class), convertType4PropertyValue(fieldType, startVal));
                     } else if (fieldType.equalsIgnoreCase("Date")) {
-                        fieldP = cb.lessThanOrEqualTo(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        fieldP = cb.lessThanOrEqualTo(keyPath.as(Date.class), DateTimeUtil.getDateFromString(startVal));
                     } else {
-                        fieldP = cb.lessThanOrEqualTo(root.get(key).as(String.class), startVal);
+                        fieldP = cb.lessThanOrEqualTo(keyPath.as(String.class), startVal);
                     }
                     break;
                 case 6:     //  GT(6, "大于查询"),
                     if (numberTypeList.contains(fieldType)) {
                         // fieldP = cb.greaterThan(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                        fieldP = cb.gt(root.get(key), convertType4PropertyValue(fieldType, startVal));
+                        fieldP = cb.gt(keyPath.as(Number.class), convertType4PropertyValue(fieldType, startVal));
                     } else if (fieldType.equalsIgnoreCase("Date")) {
-                        fieldP = cb.greaterThan(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        fieldP = cb.greaterThan(keyPath.as(Date.class), DateTimeUtil.getDateFromString(startVal));
                     } else {
-                        fieldP = cb.greaterThan(root.get(key).as(String.class), startVal);
+                        fieldP = cb.greaterThan(keyPath.as(String.class), startVal);
                     }
                     break;
                 case 7:     //  GE(7, "大于等于查询");
                     if (numberTypeList.contains(fieldType)) {
                         // fieldP = cb.greaterThanOrEqualTo(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                        fieldP = cb.ge(root.get(key), convertType4PropertyValue(fieldType, startVal));
+                        fieldP = cb.ge(keyPath.as(Number.class), convertType4PropertyValue(fieldType, startVal));
                     } else if (fieldType.equalsIgnoreCase("Date")) {
-                        fieldP = cb.greaterThanOrEqualTo(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        fieldP = cb.greaterThanOrEqualTo(keyPath.as(Date.class), DateTimeUtil.getDateFromString(startVal));
                     } else {
-                        fieldP = cb.greaterThanOrEqualTo(root.get(key).as(String.class), startVal);
+                        fieldP = cb.greaterThanOrEqualTo(keyPath.as(String.class), startVal);
                     }
                     break;
                 case 8:     // IS_NULL(8, "Null值查询"),
-                    fieldP = cb.isNull(root.get(key));
+                    fieldP = cb.isNull(keyPath);
                     break;
                 case 9:     // NOT_NULL(9, "非Null值查询")
-                    fieldP = cb.isNotNull(root.get(key));
+                    fieldP = cb.isNotNull(keyPath);
                     break;
                 case 10:     // LEFT_LIKE(10, "左模糊查询"),
-                    fieldP = cb.like(root.get(key).as(String.class), "%" + startVal);
+                    fieldP = cb.like(keyPath.as(String.class), "%" + startVal);
                     break;
                 case 11:     // RIGHT_LIKE(11, "右模糊查询")
-                    fieldP = cb.like(root.get(key).as(String.class), startVal + "%");
+                    fieldP = cb.like(keyPath.as(String.class), startVal + "%");
                     break;
                 case 12:     // IN(12, "包含查询"),   // 3.4+
                     // 切分属性值为集合
@@ -617,7 +617,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                         valueList.forEach(v -> {
                             valueDateList.add(DateTimeUtil.getDateFromString(v));
                         });
-                        Expression<Date> exp = root.<Date>get(key);
+                        Expression<Date> exp = keyPath.as(Date.class);
                         fieldP = exp.in(valueDateList);
                     } else {
                         Expression exp = root.get(key);
@@ -626,7 +626,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     break;
                 default:
                     // 0 或其他情况,则为模糊查询,FUZZY(0, "模糊查询"),
-                    fieldP = cb.like(root.get(key).as(String.class), "%" + startVal + "%");
+                    fieldP = cb.like(keyPath.as(String.class), "%" + startVal + "%");
             }
 
             if (i == 0) { // 第一个直接赋值
@@ -709,39 +709,39 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
      * @param endVal
      * @return
      */
-    private Predicate getPredicate4NumberBetweenConditiong(Root<T> root, CriteriaBuilder cb, String key, String fieldType, String startVal, String endVal) {
+    private Predicate getPredicate4NumberBetweenConditiong(Root<T> root, CriteriaBuilder cb, Path<T> keyPath, String fieldType, String startVal, String endVal) {
         if ("Byte".equalsIgnoreCase(fieldType)) {
             Byte start = Byte.valueOf(startVal);
             Byte end = Byte.valueOf(endVal);
-            return end >= start ? cb.between(root.<Byte>get(key), start, end) : cb.between(root.<Byte>get(key), end, start);
+            return end >= start ? cb.between(keyPath.as(Byte.class), start, end) : cb.between(keyPath.as(Byte.class), end, start);
         } else if ("Short".equalsIgnoreCase(fieldType)) {
             Short start = Short.valueOf(startVal);
             Short end = Short.valueOf(endVal);
-            return end >= start ? cb.between(root.<Short>get(key), start, end) : cb.between(root.<Short>get(key), end, start);
+            return end >= start ? cb.between(keyPath.as(Short.class), start, end) : cb.between(keyPath.as(Short.class), end, start);
         } else if ("int".equals(fieldType) || "Integer".equals(fieldType)) {
             Integer start = Integer.valueOf(startVal);
             Integer end = Integer.valueOf(endVal);
-            return end >= start ? cb.between(root.<Integer>get(key), start, end) : cb.between(root.<Integer>get(key), end, start);
+            return end >= start ? cb.between(keyPath.as(Integer.class), start, end) : cb.between(keyPath.as(Integer.class), end, start);
         } else if ("Long".equalsIgnoreCase(fieldType)) {
             Long start = Long.valueOf(startVal);
             Long end = Long.valueOf(endVal);
-            return end >= start ? cb.between(root.<Long>get(key), start, end) : cb.between(root.<Long>get(key), end, start);
+            return end >= start ? cb.between(keyPath.as(Long.class), start, end) : cb.between(keyPath.as(Long.class), end, start);
         } else if ("Float".equalsIgnoreCase(fieldType)) {
             Float start = Float.valueOf(startVal);
             Float end = Float.valueOf(endVal);
-            return end >= start ? cb.between(root.<Float>get(key), start, end) : cb.between(root.<Float>get(key), end, start);
+            return end >= start ? cb.between(keyPath.as(Float.class), start, end) : cb.between(keyPath.as(Float.class), end, start);
         } else if ("Double".equalsIgnoreCase(fieldType)) {
             Double start = Double.valueOf(startVal);
             Double end = Double.valueOf(endVal);
-            return end >= start ? cb.between(root.<Double>get(key), start, end) : cb.between(root.<Double>get(key), end, start);
+            return end >= start ? cb.between(keyPath.as(Double.class), start, end) : cb.between(keyPath.as(Double.class), end, start);
         } else if ("BigInteger".equalsIgnoreCase(fieldType)) {
             BigInteger start = new BigInteger(startVal);
             BigInteger end = new BigInteger(endVal);
-            return end.compareTo(start) > 0 ? cb.between(root.<BigInteger>get(key), start, end) : cb.between(root.<BigInteger>get(key), end, start);
+            return end.compareTo(start) > 0 ? cb.between(keyPath.as(BigInteger.class), start, end) : cb.between(keyPath.as(BigInteger.class), end, start);
         } else if ("BigDecimal".equalsIgnoreCase(fieldType)) {
             BigDecimal start = new BigDecimal(startVal);
             BigDecimal end = new BigDecimal(endVal);
-            return end.compareTo(start) > 0 ? cb.between(root.<BigDecimal>get(key), start, end) : cb.between(root.<BigDecimal>get(key), end, start);
+            return end.compareTo(start) > 0 ? cb.between(keyPath.as(BigDecimal.class), start, end) : cb.between(keyPath.as(BigDecimal.class), end, start);
         } else {
             return null;
         }
