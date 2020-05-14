@@ -756,10 +756,11 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     @SneakyThrows
     private boolean validateCascadingProperty(String conditionName) {
         // 用点切分属性
-        String[] props = conditionName.split(".");
+        String[] props = conditionName.split("\\.");
         // 多于5个则认为不合法
         int propLength = props.length;
         if (propLength > 5) {
+            log.warn("基于性能考虑，级联查询属性不允许超过5级!");
             return false;
         }
         // 检查切分出来的各层属性是否都存在
@@ -778,6 +779,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         try {
             propTypeB = clazzA.getDeclaredField(props[1]);
         } catch (NoSuchFieldException nsfe) {
+            log.warn("级联查询属性{}不存在!", props[0] + "." + props[1]);
             return false;
         }
         if (propLength == 2) { // 没有c，例如只是a.b级联属性
@@ -791,6 +793,8 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         try {
             propTypeC = clazzB.getDeclaredField(props[2]);
         } catch (NoSuchFieldException nsfe) {
+            StringBuffer sb = new StringBuffer(props[0]).append(".").append(props[1]).append(".").append(props[2]);
+            log.warn("级联查询属性{}不存在!", sb.toString());
             return false;
         }
         if (propLength == 3) { // 没有d，例如只是a.b.c级联属性
@@ -804,6 +808,10 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         try {
             propTypeD = clazzC.getDeclaredField(props[3]);
         } catch (NoSuchFieldException nsfe) {
+            StringBuffer sb = new StringBuffer(props[0]).append(".").append(props[1])
+                    .append(".").append(props[2])
+                    .append(".").append(props[3]);
+            log.warn("级联查询属性{}不存在!", sb.toString());
             return false;
         }
         if (propLength == 4) { // 没有e，例如只是a.b.c.d级联属性
@@ -817,6 +825,11 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         try {
             propTypeE = clazzD.getDeclaredField(props[4]);
         } catch (NoSuchFieldException nsfe) {
+            StringBuffer sb = new StringBuffer(props[0]).append(".").append(props[1])
+                    .append(".").append(props[2])
+                    .append(".").append(props[3])
+                    .append(".").append(props[4]);
+            log.warn("级联查询属性{}不存在!", sb.toString());
             return false;
         }
         return true;
@@ -831,7 +844,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
      */
     private Path<T> getPathExpressionFromKey(String key, Root<T> root) {
         // 如Task的名为"user.name"的filedName, 转换为Task.user.name属性
-        String[] props = StringUtils.split(key, ".");
+        String[] props = StringUtils.split(key, "\\.");
         Path<T> expression = root.get(props[0]);
         for (int i = 1; i < props.length; i++) {
             expression = expression.get(props[i]);
@@ -848,7 +861,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     @SneakyThrows
     private String getFinalCascadingPropertyType(String key) {
         // 用点切分属性
-        String[] props = key.split(".");
+        String[] props = key.split("\\.");
         int propLength = props.length;
         // a的属性反射字段类型
         Field propTypeA = clazz.getDeclaredField(props[0]);
