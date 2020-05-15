@@ -749,6 +749,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 
     /**
      * 检查级联属性是否合法，例如：级联属性a.b.c.d.e各层是否都存在。  最多支持4个级联点,多于5个则认为不合法
+     * 此处逻辑有点烧脑，为保持代码可读性，不采用循环或者递归实现方式。
      *
      * @param conditionName
      * @return false 不合法; true 合法。
@@ -773,11 +774,13 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 
         // 第2层属性b
         // 得到a的clazz
-        Class clazzA = propTypeA.getType();
+        Class clazzA = propTypeA.getType(); // 非集合属性时用clazzA
+        // 集合属性时用集合元素中的元素真实类型的 realClazzA
+        Class realClazzA = getCollectionEType(clazzA, propTypeA);
         // 从a类型的clazz中检查b属性名是否存在
         Field propTypeB;
         try {
-            propTypeB = clazzA.getDeclaredField(props[1]);
+            propTypeB = (realClazzA == null) ? clazzA.getDeclaredField(props[1]) : realClazzA.getDeclaredField(props[1]);
         } catch (NoSuchFieldException nsfe) {
             log.warn("级联查询属性{}不存在!", props[0] + "." + props[1]);
             return false;
@@ -789,9 +792,11 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         // 第3层属性c
         // 得到b的clazz，然后检查c
         Class clazzB = propTypeB.getType();
+        // 集合属性时用集合元素中的元素真实类型的 realClazzB
+        Class realClazzB = getCollectionEType(clazzB, propTypeB);
         Field propTypeC;
         try {
-            propTypeC = clazzB.getDeclaredField(props[2]);
+            propTypeC = (realClazzB == null) ? clazzB.getDeclaredField(props[2]) : realClazzB.getDeclaredField(props[1]);
         } catch (NoSuchFieldException nsfe) {
             StringBuffer sb = new StringBuffer(props[0]).append(".").append(props[1]).append(".").append(props[2]);
             log.warn("级联查询属性{}不存在!", sb.toString());
@@ -804,9 +809,11 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         // 第4层属性d
         // 得到c的clazz，然后检查d
         Class clazzC = propTypeC.getType();
+        // 集合属性时用集合元素中的元素真实类型的 realClazzC
+        Class realClazzC = getCollectionEType(clazzC, propTypeC);
         Field propTypeD;
         try {
-            propTypeD = clazzC.getDeclaredField(props[3]);
+            propTypeD = (realClazzC == null) ? clazzC.getDeclaredField(props[3]) : realClazzC.getDeclaredField(props[3]);
         } catch (NoSuchFieldException nsfe) {
             StringBuffer sb = new StringBuffer(props[0]).append(".").append(props[1])
                     .append(".").append(props[2])
@@ -821,9 +828,11 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         // 第5层属性e
         // 得到d的clazz，然后检查e
         Class clazzD = propTypeD.getType();
+        // 集合属性时用集合元素中的元素真实类型的 realClazzC
+        Class realClazzD = getCollectionEType(clazzD, propTypeD);
         Field propTypeE;
         try {
-            propTypeE = clazzD.getDeclaredField(props[4]);
+            propTypeE = (realClazzD == null) ? clazzD.getDeclaredField(props[4]) : realClazzD.getDeclaredField(props[4]);
         } catch (NoSuchFieldException nsfe) {
             StringBuffer sb = new StringBuffer(props[0]).append(".").append(props[1])
                     .append(".").append(props[2])
@@ -842,15 +851,18 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
      * @param root
      * @return
      */
-    private Path<T> getPathExpressionFromKey(String key, Root<T> root) {
+    private Path getPathExpressionFromKey(String key, Root<T> root) {
         // 如Task的名为"user.name"的filedName, 转换为Task.user.name属性
-        String[] props = StringUtils.split(key, "\\.");
-        Path<T> expression = root.get(props[0]);
-        for (int i = 1; i < props.length; i++) {
-            expression = expression.get(props[i]);
-        }
+        String[] props = key.split( "\\.");
+        Path expression = root.get(props[0]);
+//        for (int i = 1; i < props.length; i++) {
+//            expression = expression.get(props[i]);
+//        }
+
+        expression = expression.get(props[1]);
+        expression = expression.get(props[2]);
         return expression;
-    }
+    }PluralAttribute
 
     /**
      * 获取级联属性的最终属性的数据类型，例如a.b.c的属性，那么将返回最终属性c的数据类型，如String/Date/Integer等的字符串
@@ -871,30 +883,67 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 
         // 得到a的clazz，检查b
         Class clazzA = propTypeA.getType();
+        // 集合属性时用集合元素中的元素真实类型的 realClazzA
+        Class realClazzA = getCollectionEType(clazzA, propTypeA);
         // 从a类型的clazz中检查b属性名是否存在
-        Field propTypeB = clazzA.getDeclaredField(props[1]);
+        Field propTypeB = (realClazzA == null) ? clazzA.getDeclaredField(props[1]) : realClazzA.getDeclaredField(props[1]);
         if (propLength == 2) { // 没有c，例如只是a.b级联属性,返回b的数据类型的字符串
             return propTypeB.getType().getSimpleName();
         }
 
         // 得到b的clazz，然后检查c
         Class clazzB = propTypeB.getType();
-        Field propTypeC = clazzB.getDeclaredField(props[2]);
+        // 集合属性时用集合元素中的元素真实类型的 realClazzB
+        Class realClazzB = getCollectionEType(clazzB, propTypeB);
+        Field propTypeC = (realClazzB == null) ? clazzB.getDeclaredField(props[2]) : realClazzB.getDeclaredField(props[2]);
         if (propLength == 3) { // 没有d，例如只是a.b.c级联属性，返回c的数据类型的字符串
             return propTypeC.getType().getSimpleName();
         }
 
         // 得到c的clazz，然后检查d
         Class clazzC = propTypeC.getType();
-        Field propTypeD = clazzC.getDeclaredField(props[3]);
+        // 集合属性时用集合元素中的元素真实类型的 realClazzC
+        Class realClazzC = getCollectionEType(clazzC, propTypeC);
+        Field propTypeD = (realClazzC == null) ? clazzC.getDeclaredField(props[3]) : realClazzC.getDeclaredField(props[3]);
         if (propLength == 4) { // 没有e，例如只是a.b.c.d级联属性，返回d的数据类型的字符串
             return propTypeD.getType().getSimpleName();
         }
 
         // 得到d的clazz，然后检查e
         Class clazzD = propTypeD.getType();
-        Field propTypeE = clazzD.getDeclaredField(props[4]);
+        // 集合属性时用集合元素中的元素真实类型的 realClazzD
+        Class realClazzD = getCollectionEType(clazzD, propTypeD);
+        Field propTypeE = (realClazzD == null) ? clazzD.getDeclaredField(props[4]) : realClazzD.getDeclaredField(props[3]);
         return propTypeE.getType().getSimpleName(); // 返回e的数据类型的字符串
+    }
+
+    /**
+     * 获取集合中元素的clazz反射类型
+     *
+     * @return
+     */
+    private Class<?> getCollectionEType(Class<?> propClazz, Field propField) {
+        // 常见集合类型的Class
+        List<Class> clazzs = new ArrayList<>();
+        clazzs.add(Collection.class);
+        clazzs.add(List.class);
+        clazzs.add(Set.class);
+        clazzs.add(ArrayList.class);
+        clazzs.add(LinkedList.class);
+        clazzs.add(HashSet.class);
+        clazzs.add(TreeSet.class);
+
+        if (clazzs.contains(propClazz)) {
+            // 当前集合的泛型类型
+            Type genericType = propField.getGenericType();
+            if (genericType instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) genericType;
+                // 得到容器中的泛型元素类型的class类型对象
+                Class<?> realEClazzA = (Class<?>) pt.getActualTypeArguments()[0];
+                return realEClazzA;
+            }
+        }
+        return null;
     }
 
     public static void main(String[] args) {
@@ -914,7 +963,6 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 //        String val = "AA,BB;CC、DD；EE，FF";
 //        String[] tmp = val.split(",|;|、|，|；");
 //        System.out.println(tmp);
-
     }
 
 }
