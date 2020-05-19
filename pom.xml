@@ -90,6 +90,12 @@
             <artifactId>querydsl-jpa</artifactId>
             <version>${querydsl.version}</version>
         </dependency>
+        <dependency>
+            <!-- QueryDSL依赖 -->
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
 
     </dependencies>
 

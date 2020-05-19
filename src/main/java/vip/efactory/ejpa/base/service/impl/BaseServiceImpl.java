@@ -1,6 +1,7 @@
 package vip.efactory.ejpa.base.service.impl;
 
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import vip.efactory.ejpa.utils.DateTimeUtil;
 import vip.efactory.ejpa.utils.MapUtil;
 import vip.efactory.ejpa.utils.SQLFilter;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -72,6 +74,15 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 
     @PersistenceContext
     EntityManager em;
+
+    // QueryDSL查询工厂实体
+    JPAQueryFactory queryFactory;
+
+    //实例化QueryDSL的JPAQueryFactory
+    @PostConstruct
+    public void initFactory() {
+        queryFactory = new JPAQueryFactory(em);
+    }
 
     /**
      * Description:获取T的Class对象是关键，看构造方法

@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 import vip.efactory.ejpa.base.entity.BaseEntity;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * @author dbdu
  */
 @NoRepositoryBean
-public interface BaseRepository<T extends BaseEntity, ID> extends JpaRepository<T, ID> {
+public interface BaseRepository<T extends BaseEntity, ID> extends JpaRepository<T, ID>, QuerydslPredicateExecutor<T> {
 
 //    /**
 //     * Description:根据实体的编号，判断数据库中是否存在实体
