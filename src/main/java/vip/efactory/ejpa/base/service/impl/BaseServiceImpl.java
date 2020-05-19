@@ -862,13 +862,13 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         expression = expression.get(props[1]);
         expression = expression.get(props[2]);
         return expression;
-    }PluralAttribute
+    }
 
     /**
      * 获取级联属性的最终属性的数据类型，例如a.b.c的属性，那么将返回最终属性c的数据类型，如String/Date/Integer等的字符串
      *
      * @param key 是必须含有点的级联属性
-     * @return
+     * @return String 属性的类型字符串
      */
     @SneakyThrows
     private String getFinalCascadingPropertyType(String key) {
