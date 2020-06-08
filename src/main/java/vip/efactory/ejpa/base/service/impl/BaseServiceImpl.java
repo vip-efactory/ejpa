@@ -73,10 +73,10 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     }
 
     @PersistenceContext
-    EntityManager em;
+    protected EntityManager em;
 
     // QueryDSL查询工厂实体
-    JPAQueryFactory queryFactory;
+    protected JPAQueryFactory queryFactory;
 
     //实例化QueryDSL的JPAQueryFactory
     @PostConstruct
@@ -90,7 +90,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
      * @author dbdu
      * @date 18-12-22 下午5:15
      */
-    private Class<T> clazz = null;
+    protected Class<T> clazz = null;
 
     /**
      * Description:注入需要的Repository接口的代理类
