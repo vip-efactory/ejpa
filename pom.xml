@@ -5,18 +5,19 @@
 
     <groupId>vip.efactory</groupId>
     <artifactId>ejpa</artifactId>
-    <version>3.6.0</version>
+    <version>3.7.0</version>
     <packaging>jar</packaging>
     <name>ejpa</name>
     <description>基于jpa再封装,常用的模板CRUD,分页排序,多字段高级搜索,国际化，多租户等功能，https://github.com/vip-efactory/ejpa </description>
 
     <properties>
         <java.version>1.8</java.version>
-        <spring.boot.version>2.2.6.RELEASE</spring.boot.version>
+        <spring.boot.version>2.3.0.RELEASE</spring.boot.version>
         <beanutils.version>1.9.3</beanutils.version>
         <swagger-starter.version>1.9.0.RELEASE</swagger-starter.version>
-        <lombok.version>1.18.10</lombok.version>
-        <common.i18n.version>1.1.0</common.i18n.version>
+        <lombok.version>1.18.12</lombok.version>
+        <common.i18n.version>1.2.0</common.i18n.version>
+        <validation.api.version>2.0.1.Final</validation.api.version>
         <ali.ttl.version>2.11.4</ali.ttl.version>
         <querydsl.version>4.3.1</querydsl.version>
     </properties>
@@ -95,6 +96,12 @@
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
             <version>${spring.boot.version}</version>
+        </dependency>
+        <!-- 实体属性校验注解 -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${validation.api.version}</version>
         </dependency>
 
     </dependencies>
