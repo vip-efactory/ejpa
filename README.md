@@ -5,20 +5,15 @@
 - 多字段复杂条件的查询
 - 国际化--i18n
 - 实现对实体属性的前端约束检查
-
+- 支持多租户
 
 # 具体使用案例
 - https://github.com/vip-efactory/ejpa-example/blob/master/README.md
 
-# V4.0.0 计划
-- 加持redis的缓存配置；
-- 对请求加持日志记录；
+# TODO
 - 对底层的数据库异常增加处理；
-- 对敏感信息脱敏处理
+- 改造BaseEntity的Date类型为LocalDateTime等。
 
-# V5.0.0 计划
-- 支持多租户
-- ...
 
 # 注意
 - 请不要直接使用master分支的代码,在开发中可能非常不稳定,可以使用发布的分支!
