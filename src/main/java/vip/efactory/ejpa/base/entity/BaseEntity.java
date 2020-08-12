@@ -13,12 +13,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 
 /**
  * "@EntityListeners(AuditingEntityListener.class)" 是用于监听实体类添加或者删除操作的
- *  ID 为主键的泛型，子类继承需要指定ID的类型，这样将ID实现放在子类中，具有更广的适用性
+ * ID 为主键的泛型，子类继承需要指定ID的类型，这样将ID实现放在子类中，具有更广的适用性
+ * 关于LocalDateTime等，参见：
+ * https://mp.weixin.qq.com/s?__biz=MzI4Njk5OTg1MA==&mid=2247484398&idx=1&sn=40329619dc17ea8af6e6f16a41d1313d&chksm=ebd517abdca29ebda07d005eb1236b44d8fb8d230dc67b1daf79cddcecdd8b330ed39d4efb2b&scene=0&xtrack=1&key=65359c7fdab27a23bb00270ec7068f850ea8be0db518668ebd3f4750793b534a3a6837ecf817c67590d3ace8aa6f7c0adf010eac1f0477e634b7a6ecb94a160f10e9177fe53dec7b2a22a99b1efc2da1&ascene=1&uin=Mjg5NDEwNjA0MA%3D%3D&devicetype=Windows+XP&version=62060841&lang=zh_CN&exportkey=AT1%2BbVgO%2Fh%2FbAOVJ7ZJKtdI%3D&pass_ticket=rw2bMthKO3Odv2q5k4reG4dEDsvXwajBufPczFjV4o2FTl%2BbPI%2B7tJ%2F26NQGvXnm
  */
 @Getter
 @Setter
@@ -28,12 +30,13 @@ import java.util.Date;
 public abstract class BaseEntity<ID> extends BaseSearchEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
-//    @Id
+    //    @Id
 //    @GeneratedValue(strategy = GenerationType.IDENTITY)
 //    @ApiModelProperty(name = "id", example = "1")
 //    private Long id;
     // 将主键的set与get的实现移植到子类这样更具有灵活性
     public abstract ID getId();
+
     public abstract void setId(ID id);
 
     /**
@@ -44,7 +47,7 @@ public abstract class BaseEntity<ID> extends BaseSearchEntity implements Seriali
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate //使用注解实现时间的创建
     @ApiModelProperty(hidden = true)
-    private Date createTime;
+    private LocalDateTime createTime;
 
     /**
      * Description:最后更新日期,数据底层实现时间的更新
@@ -55,7 +58,7 @@ public abstract class BaseEntity<ID> extends BaseSearchEntity implements Seriali
     @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate //使用注解实现更新时间的更新
     @ApiModelProperty(hidden = true)
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
 
     /**

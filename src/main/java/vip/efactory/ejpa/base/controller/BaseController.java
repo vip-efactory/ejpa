@@ -8,23 +8,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import vip.efactory.common.base.enums.SearchTypeEnum;
+import vip.efactory.common.base.page.EPage;
+import vip.efactory.common.base.utils.CommUtil;
+import vip.efactory.common.base.utils.R;
+import vip.efactory.common.base.utils.ValidateModelUtil;
+import vip.efactory.common.base.valid.Create;
+import vip.efactory.common.base.valid.Update;
 import vip.efactory.common.i18n.enums.CommAPIEnum;
 import vip.efactory.common.i18n.enums.CommDBEnum;
 import vip.efactory.common.i18n.service.ILocaleMsgSourceService;
 import vip.efactory.ejpa.base.entity.BaseEntity;
 import vip.efactory.ejpa.base.entity.BaseSearchField;
-import vip.efactory.ejpa.base.enums.SearchTypeEnum;
 import vip.efactory.ejpa.base.service.IBaseService;
-import vip.efactory.ejpa.base.valid.Create;
-import vip.efactory.ejpa.base.valid.Update;
-import vip.efactory.ejpa.utils.CommUtil;
-import vip.efactory.ejpa.utils.R;
 import vip.efactory.ejpa.utils.UpdatePoUtil;
-import vip.efactory.ejpa.utils.ValidateModelUtil;
 
 import javax.validation.groups.Default;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -200,8 +202,8 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
             return R.error(CommDBEnum.UPDATE_NON_EXISTENT);
         } else {
             // 检查更新时间戳，避免用旧的数据更新数据库里的新数据
-            Date updateTime = entity.getUpdateTime();
-            Date dbUpdateTime = entityOptional.get().getUpdateTime();
+            LocalDateTime updateTime = entity.getUpdateTime();
+            LocalDateTime dbUpdateTime = entityOptional.get().getUpdateTime();
             if (updateTime != null && updateTime.compareTo(dbUpdateTime) != 0) {
                 return R.error(CommDBEnum.UPDATE_NEW_BY_OLD_NOT_ALLOWED);
             }
