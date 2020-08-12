@@ -5,7 +5,7 @@
 
     <groupId>vip.efactory</groupId>
     <artifactId>ejpa</artifactId>
-    <version>3.7.0</version>
+    <version>4.0.0</version>
     <packaging>jar</packaging>
     <name>ejpa</name>
     <description>基于jpa再封装,常用的模板CRUD,分页排序,多字段高级搜索,国际化，多租户等功能，https://github.com/vip-efactory/ejpa </description>
@@ -17,6 +17,7 @@
         <swagger-starter.version>1.9.0.RELEASE</swagger-starter.version>
         <lombok.version>1.18.12</lombok.version>
         <common.i18n.version>1.2.0</common.i18n.version>
+        <common.base.version>1.0.0</common.base.version>
         <validation.api.version>2.0.1.Final</validation.api.version>
         <ali.ttl.version>2.11.4</ali.ttl.version>
         <querydsl.version>4.3.1</querydsl.version>
@@ -51,6 +52,11 @@
             <version>${ali.ttl.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>vip.efactory</groupId>
+            <artifactId>common-base</artifactId>
+            <version>${common.base.version}</version>
+        </dependency>
         <!-- 引入国际化的依赖 -->
         <dependency>
             <groupId>vip.efactory</groupId>
