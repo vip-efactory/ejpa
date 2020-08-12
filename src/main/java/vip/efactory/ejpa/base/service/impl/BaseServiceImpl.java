@@ -12,15 +12,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import vip.efactory.common.base.enums.ConditionRelationEnum;
+import vip.efactory.common.base.enums.SearchTypeEnum;
+import vip.efactory.common.base.utils.DateTimeUtil;
+import vip.efactory.common.base.utils.MapUtil;
+import vip.efactory.common.base.utils.SQLFilter;
 import vip.efactory.ejpa.base.entity.BaseEntity;
 import vip.efactory.ejpa.base.entity.BaseSearchField;
-import vip.efactory.ejpa.base.enums.ConditionRelationEnum;
-import vip.efactory.ejpa.base.enums.SearchTypeEnum;
 import vip.efactory.ejpa.base.repository.BaseRepository;
 import vip.efactory.ejpa.base.service.IBaseService;
-import vip.efactory.ejpa.utils.DateTimeUtil;
-import vip.efactory.ejpa.utils.MapUtil;
-import vip.efactory.ejpa.utils.SQLFilter;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -38,13 +38,15 @@ import java.util.*;
  * Description:这个类是BaseServcie的实现类，组件的实现类可以继承这个类来利用可以用的方法
  * 当然，也可以在这里添加调用前的检查逻辑
  * 复杂条件处理,可以参照:https://blog.csdn.net/J080624/article/details/84581231
+ *  继承JDK中的Observable，是为了是观察者模式来处理多表缓存的一致性
+ *  继承Observable，说明自己可以被别人观察，实现Observer说明自己也可以观察别人
  * Created at:2018-06-25 16:10,
  * by dbdu
  */
 @SuppressWarnings("all")
 @Slf4j
 @Transactional
-public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository> implements IBaseService<T, ID> {
+public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository> extends Observable implements IBaseService<T, ID>, Observer {
     private final String DEFAULT_GROUP_NAME = "DEFAULT_NO_GROUP"; //默认组的名称
     private static List<String> numberTypeList;
 
@@ -751,7 +753,47 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         }
     }
 
-    public static void main(String[] args) {
+    // ######################################################################################
+    // 注意下面的三个方法是是维护多表关联查询结果缓存的一致性的，除非你知道在做什么，否则不要去修改!         #
+    // 三个方法是：registObservers,notifyOthers,update                                        #
+    // 此处使用了jdk自带的观察者的设计模式。  当前对象既是被观察者，也是观察者!                          #
+    // ######################################################################################
+    /**
+     * 注册观察者,即哪些组件观察自己，让子类调用此方法实现观察者注册
+     */
+    public void registObservers(Observer... observers){
+        for (Observer observer: observers) {
+            this.addObserver(observer);
+        }
+    }
+
+    /**
+     * 自己的状态改变了，通知所有依赖自己的组件进行缓存清除，
+     * 通常的增删改的方法都需要调用这个方法，来维持 cache right!
+     */
+    public void notifyOthers(){
+        //注意在用Java中的Observer模式的时候i下面这句话不可少
+        this.setChanged();
+        // 然后主动通知， 这里用的是推的方式
+        // this.notifyObservers(this.content);
+        // 如果用拉的方式，这么调用
+         this.notifyObservers();
+    }
+
+    /**
+     * 这是观察别人，别人更新了之后来更新自己的
+     * 其实此处不需要被观察者的任何数据，只是为了知道被观察者状态变了，自己的相关缓存也就需要清除了，否则不一致
+     * 例如：观察Ａ对象，但是Ａ对象被删除了，那个自己这边关联查询与Ａ有关的缓存都应该清除
+     * 子类重写此方法在方法前面加上清除缓存的注解，或者在方法体内具体执行一些清除缓存的代码。
+     * @param o 被观察的对象
+     * @param arg 传递的数据
+     */
+    @Override
+    public void update(Observable o, Object arg) {
+
+    }
+
+//    public static void main(String[] args) {
 //        Set<BaseSearchField> conditions = new HashSet<BaseSearchField>();
 //        for (int i = 0; i < 15; i++) {
 //            BaseSearchField condition = new BaseSearchField();
@@ -768,7 +810,5 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 //        String val = "AA,BB;CC、DD；EE，FF";
 //        String[] tmp = val.split(",|;|、|，|；");
 //        System.out.println(tmp);
-
-    }
-
+//    }
 }
