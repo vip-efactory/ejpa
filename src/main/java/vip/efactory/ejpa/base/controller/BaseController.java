@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import vip.efactory.common.base.entity.BaseSearchField;
 import vip.efactory.common.base.enums.SearchTypeEnum;
 import vip.efactory.common.base.page.EPage;
 import vip.efactory.common.base.utils.CommUtil;
@@ -19,7 +20,6 @@ import vip.efactory.common.i18n.enums.CommAPIEnum;
 import vip.efactory.common.i18n.enums.CommDBEnum;
 import vip.efactory.common.i18n.service.ILocaleMsgSourceService;
 import vip.efactory.ejpa.base.entity.BaseEntity;
-import vip.efactory.ejpa.base.entity.BaseSearchField;
 import vip.efactory.ejpa.base.service.IBaseService;
 import vip.efactory.ejpa.utils.UpdatePoUtil;
 

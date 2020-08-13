@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Transient;
+import vip.efactory.common.base.entity.BaseSearchField;
 
 import java.util.Set;
 

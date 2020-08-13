@@ -12,13 +12,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import vip.efactory.common.base.entity.BaseSearchField;
 import vip.efactory.common.base.enums.ConditionRelationEnum;
 import vip.efactory.common.base.enums.SearchTypeEnum;
 import vip.efactory.common.base.utils.DateTimeUtil;
 import vip.efactory.common.base.utils.MapUtil;
 import vip.efactory.common.base.utils.SQLFilter;
 import vip.efactory.ejpa.base.entity.BaseEntity;
-import vip.efactory.ejpa.base.entity.BaseSearchField;
 import vip.efactory.ejpa.base.repository.BaseRepository;
 import vip.efactory.ejpa.base.service.IBaseService;
 
