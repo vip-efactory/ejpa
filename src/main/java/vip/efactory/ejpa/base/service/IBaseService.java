@@ -5,11 +5,10 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import vip.efactory.ejpa.base.entity.BaseEntity;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Description:服务层接口的父接口，继承此接口默认下面的这些方法要实现的，采用泛型的写法
@@ -284,5 +283,28 @@ public interface IBaseService<T extends BaseEntity, ID> {
      */
     Set advanceSearchProperty(String property, String value);
 
+    /**
+     * 注册观察者,即哪些组件观察自己，让子类调用此方法实现观察者注册
+     */
+    @Async
+    void registObservers(Observer... observers);
 
+    /**
+     * 自己的状态改变了，通知所有依赖自己的组件进行缓存清除，
+     * 通常的增删改的方法都需要调用这个方法，来维持 cache right!
+     */
+    @Async
+    void notifyOthers();
+
+    /**
+     * 这是观察别人，别人更新了之后来更新自己的
+     * 其实此处不需要被观察者的任何数据，只是为了知道被观察者状态变了，自己的相关缓存也就需要清除了，否则不一致
+     * 例如：观察Ａ对象，但是Ａ对象被删除了，那个自己这边关联查询与Ａ有关的缓存都应该清除
+     * 子类重写此方法在方法前面加上清除缓存的注解，或者在方法体内具体执行一些清除缓存的代码。
+     *
+     * @param o   被观察的对象
+     * @param arg 传递的数据
+     */
+    @Async
+    void update(Observable o, Object arg);
 }

@@ -761,6 +761,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     /**
      * 注册观察者,即哪些组件观察自己，让子类调用此方法实现观察者注册
      */
+    @Override
     public void registObservers(Observer... observers){
         for (Observer observer: observers) {
             this.addObserver(observer);
@@ -771,6 +772,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
      * 自己的状态改变了，通知所有依赖自己的组件进行缓存清除，
      * 通常的增删改的方法都需要调用这个方法，来维持 cache right!
      */
+    @Override
     public void notifyOthers(){
         //注意在用Java中的Observer模式的时候i下面这句话不可少
         this.setChanged();
