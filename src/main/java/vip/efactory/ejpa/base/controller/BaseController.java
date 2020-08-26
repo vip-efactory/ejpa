@@ -302,7 +302,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
      * Description:检查操作的idd对应实体是否存在，因为多人操作，可能被其他人删除了！
      *
      * @param entityId 实体主键id
-     * @return Boolean
+     * @return Boolean true存在，false 不存在
      */
     public Boolean chkEntityIdExist(ID entityId) {
         return null != entityId && entityService.existsById(entityId);

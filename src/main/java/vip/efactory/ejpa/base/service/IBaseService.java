@@ -185,10 +185,10 @@ public interface IBaseService<T extends BaseEntity, ID> {
     // 下面是检查存在性及计数
 
     /**
-     * Description:
+     * Description: 根据ID检查实体是否存在
      *
      * @param var1 id主键
-     * @return boolean
+     * @return boolean true存在，false 不存在
      */
     boolean existsById(ID var1);
 
