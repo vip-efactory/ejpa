@@ -12,7 +12,8 @@
 
 # TODO
 - 对底层的数据库异常增加处理；
-- 改造BaseEntity的Date类型为LocalDateTime等。
+- 改造BaseEntity的Date类型为LocalDateTime等;
+- 改造高级搜索以便支持LocalDateTime等类型。
 
 
 # 注意
