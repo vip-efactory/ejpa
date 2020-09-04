@@ -16,7 +16,7 @@
         <beanutils.version>1.9.4</beanutils.version>
         <swagger-starter.version>1.9.0.RELEASE</swagger-starter.version>
         <lombok.version>1.18.12</lombok.version>
-        <common.i18n.version>1.2.0</common.i18n.version>
+        <common.i18n.version>1.2.1</common.i18n.version>
         <common.base.version>1.0.0</common.base.version>
         <validation.api.version>2.0.1.Final</validation.api.version>
         <ali.ttl.version>2.11.4</ali.ttl.version>

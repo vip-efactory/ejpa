@@ -14,6 +14,7 @@
 - 对底层的数据库异常增加处理；
 - 改造BaseEntity的Date类型为LocalDateTime等;
 - 改造高级搜索以便支持LocalDateTime等类型。
+- 高级查询支持严格模式：严格模式下，条件错误则不再继续进行查询!!!
 
 
 # 注意
