@@ -47,11 +47,16 @@ import java.util.*;
 @Slf4j
 @Transactional
 public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository> extends Observable implements IBaseService<T, ID>, Observer {
-    private final String DEFAULT_GROUP_NAME = "DEFAULT_NO_GROUP"; //默认组的名称
+    // 默认组的名称
+    private final String DEFAULT_GROUP_NAME = "DEFAULT_NO_GROUP";
+    // 常见的数字类型
     private static List<String> numberTypeList;
+    // 常见日期时间类型
+    private static List<String> dateTypeList;
 
     static { // 静态初始化以便提高性能
-        numberTypeList = new ArrayList<>();  //保存常见的数字类型，以便避免逐个枚举类型处理
+        // 保存常见的数字类型，以便避免逐个枚举类型处理
+        numberTypeList = new ArrayList<>();
         numberTypeList.add("byte");
         numberTypeList.add("Byte");
         numberTypeList.add("short");
@@ -72,6 +77,13 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         // numberTypeList.add("DoubleAdder");
         // numberTypeList.add("LongAccumulator");
         // numberTypeList.add("LongAdder");
+
+        // 保存常见的日期时间类型
+        dateTypeList = new ArrayList<>();
+        dateTypeList.add("Date");
+        dateTypeList.add("LocalDateTime");
+        dateTypeList.add("LocalTime");
+        dateTypeList.add("LocalDate");
     }
 
     @PersistenceContext
@@ -535,7 +547,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                 case 1:     //  EQ(1, "等于查询"),
                     if (numberTypeList.contains(fieldType)) {
                         fieldP = cb.equal(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                    } else if (dateTypeList.contains(fieldType)) {
                         fieldP = cb.equal(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
                     } else {
                         fieldP = cb.equal(root.get(key).as(String.class), startVal);
@@ -544,7 +556,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                 case 2:     //  RANGE(2, "范围查询"),  如果结束值大于开始值，则交换位置避免查不到数据
                     if (numberTypeList.contains(fieldType)) {
                         fieldP = getPredicate4NumberBetweenConditiong(root, cb, key, fieldType, startVal, endVal);
-                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                    } else if (dateTypeList.contains(fieldType)) {
                         Date start = DateTimeUtil.getDateFromString(startVal);
                         Date end = DateTimeUtil.getDateFromString(endVal);
                         fieldP = end.compareTo(start) > 0 ? cb.between(root.<Date>get(key), start, end) : cb.between(root.<Date>get(key), end, start);
@@ -555,7 +567,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                 case 3:     //  NE(3, "不等于查询"),
                     if (numberTypeList.contains(fieldType)) {
                         fieldP = cb.notEqual(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                    } else if (dateTypeList.contains(fieldType)) {
                         fieldP = cb.notEqual(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
                     } else {
                         fieldP = cb.notEqual(root.get(key), startVal);
@@ -565,7 +577,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     if (numberTypeList.contains(fieldType)) {
                         // fieldP = cb.lessThan(root.get(key), convertType4PropertyValue(fieldType, startVal));
                         fieldP = cb.lt(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                    } else if (dateTypeList.contains(fieldType)) {
                         fieldP = cb.lessThan(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
                     } else {
                         fieldP = cb.lessThan(root.get(key).as(String.class), startVal);
@@ -575,7 +587,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     if (numberTypeList.contains(fieldType)) {
                         // fieldP = cb.lessThanOrEqualTo(root.get(key), convertType4PropertyValue(fieldType, startVal));
                         fieldP = cb.le(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                    } else if (dateTypeList.contains(fieldType)) {
                         fieldP = cb.lessThanOrEqualTo(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
                     } else {
                         fieldP = cb.lessThanOrEqualTo(root.get(key).as(String.class), startVal);
@@ -585,7 +597,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     if (numberTypeList.contains(fieldType)) {
                         // fieldP = cb.greaterThan(root.get(key), convertType4PropertyValue(fieldType, startVal));
                         fieldP = cb.gt(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                    } else if (dateTypeList.contains(fieldType)) {
                         fieldP = cb.greaterThan(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
                     } else {
                         fieldP = cb.greaterThan(root.get(key).as(String.class), startVal);
@@ -595,7 +607,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     if (numberTypeList.contains(fieldType)) {
                         // fieldP = cb.greaterThanOrEqualTo(root.get(key), convertType4PropertyValue(fieldType, startVal));
                         fieldP = cb.ge(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (fieldType.equalsIgnoreCase("Date")) {
+                    } else if (dateTypeList.contains(fieldType)) {
                         fieldP = cb.greaterThanOrEqualTo(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
                     } else {
                         fieldP = cb.greaterThanOrEqualTo(root.get(key).as(String.class), startVal);
@@ -618,7 +630,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     String[] values = startVal.split(",|;|、|，|；"); // 支持的分隔符：中英文的逗号分号，和中文的顿号！
                     List<String> valueList = Arrays.asList(values);
                     // 日期类型特殊处理
-                    if (fieldType.equalsIgnoreCase("Date")) {
+                    if (dateTypeList.contains(fieldType)) {
                         List<Date> valueDateList = new ArrayList<>();
                         valueList.forEach(v -> {
                             valueDateList.add(DateTimeUtil.getDateFromString(v));
