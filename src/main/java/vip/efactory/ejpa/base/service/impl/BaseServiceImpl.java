@@ -892,15 +892,19 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     /**
      * 自己的状态改变了，通知所有依赖自己的组件进行缓存清除，
      * 通常的增删改的方法都需要调用这个方法，来维持 cache right!
+     * @param arg 通知观察者时可以传递礼物arg，即数据，如果不需要数据就传递null;
      */
     @Override
-    public void notifyOthers() {
-        //注意在用Java中的Observer模式的时候i下面这句话不可少
+    public void notifyOthers(Object arg) {
+        //注意在用Java中的Observer模式的时候下面这句话不可少
         this.setChanged();
+//        if (null != arg) {
         // 然后主动通知， 这里用的是推的方式
-        // this.notifyObservers(this.content);
-        // 如果用拉的方式，这么调用
-        this.notifyObservers();
+        this.notifyObservers(arg);
+//        } else {
+//            // 如果用拉的方式，这么调用
+//            this.notifyObservers();
+//        }
     }
 
     /**

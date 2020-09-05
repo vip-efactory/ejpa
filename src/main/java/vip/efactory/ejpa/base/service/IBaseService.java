@@ -291,10 +291,11 @@ public interface IBaseService<T extends BaseEntity, ID> {
 
     /**
      * 自己的状态改变了，通知所有依赖自己的组件进行缓存清除，
-     * 通常的增删改的方法都需要调用这个方法，来维持 cache right!
+     * 通常的增删改的方法都需要调用这个方法，来维持缓存一致性
+     * @param arg 通知观察者时可以传递礼物arg，即数据，如果不需要数据就传递null;
      */
     @Async
-    void notifyOthers();
+    void notifyOthers(Object arg);
 
     /**
      * 这是观察别人，别人更新了之后来更新自己的
