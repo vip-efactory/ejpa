@@ -11,7 +11,9 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.EntityListeners;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -44,7 +46,6 @@ public abstract class BaseEntity<ID> extends BaseSearchEntity implements Seriali
      */
     @Column(updatable = false, columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate //使用注解实现时间的创建
     @ApiModelProperty(hidden = true)
     private LocalDateTime createTime;
@@ -55,7 +56,6 @@ public abstract class BaseEntity<ID> extends BaseSearchEntity implements Seriali
     @Column(columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL COMMENT '更新时间'")
     //使用注解实现时间的更新
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
     @LastModifiedDate //使用注解实现更新时间的更新
     @ApiModelProperty(hidden = true)
     private LocalDateTime updateTime;
