@@ -32,14 +32,17 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 /**
  * Description:这个类是BaseServcie的实现类，组件的实现类可以继承这个类来利用可以用的方法
  * 当然，也可以在这里添加调用前的检查逻辑
  * 复杂条件处理,可以参照:https://blog.csdn.net/J080624/article/details/84581231
- *  继承JDK中的Observable，是为了是观察者模式来处理多表缓存的一致性
- *  继承Observable，说明自己可以被别人观察，实现Observer说明自己也可以观察别人
+ * 继承JDK中的Observable，是为了是观察者模式来处理多表缓存的一致性
+ * 继承Observable，说明自己可以被别人观察，实现Observer说明自己也可以观察别人
  * Created at:2018-06-25 16:10,
  * by dbdu
  */
@@ -548,7 +551,15 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     if (numberTypeList.contains(fieldType)) {
                         fieldP = cb.equal(root.get(key), convertType4PropertyValue(fieldType, startVal));
                     } else if (dateTypeList.contains(fieldType)) {
-                        fieldP = cb.equal(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        if (fieldType.equalsIgnoreCase("Date")) {
+                            fieldP = cb.equal(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
+                            fieldP = cb.equal(root.<LocalDateTime>get(key), DateTimeUtil.getLocalDateTimeFromString(startVal));
+                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
+                            fieldP = cb.equal(root.<LocalDate>get(key), DateTimeUtil.getLocalDateFromString(startVal));
+                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
+                            fieldP = cb.equal(root.<LocalTime>get(key), DateTimeUtil.getLocalTimeFromString(startVal));
+                        }
                     } else {
                         fieldP = cb.equal(root.get(key).as(String.class), startVal);
                     }
@@ -557,9 +568,23 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     if (numberTypeList.contains(fieldType)) {
                         fieldP = getPredicate4NumberBetweenConditiong(root, cb, key, fieldType, startVal, endVal);
                     } else if (dateTypeList.contains(fieldType)) {
-                        Date start = DateTimeUtil.getDateFromString(startVal);
-                        Date end = DateTimeUtil.getDateFromString(endVal);
-                        fieldP = end.compareTo(start) > 0 ? cb.between(root.<Date>get(key), start, end) : cb.between(root.<Date>get(key), end, start);
+                        if (fieldType.equalsIgnoreCase("Date")) {
+                            Date start = DateTimeUtil.getDateFromString(startVal);
+                            Date end = DateTimeUtil.getDateFromString(endVal);
+                            fieldP = end.compareTo(start) > 0 ? cb.between(root.<Date>get(key), start, end) : cb.between(root.<Date>get(key), end, start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
+                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
+                            LocalDateTime end = DateTimeUtil.getLocalDateTimeFromString(endVal);
+                            fieldP = end.compareTo(start) > 0 ? cb.between(root.<LocalDateTime>get(key), start, end) : cb.between(root.<LocalDateTime>get(key), end, start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
+                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
+                            LocalDate end = DateTimeUtil.getLocalDateFromString(endVal);
+                            fieldP = end.compareTo(start) > 0 ? cb.between(root.<LocalDate>get(key), start, end) : cb.between(root.<LocalDate>get(key), end, start);
+                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
+                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
+                            LocalTime end = DateTimeUtil.getLocalTimeFromString(endVal);
+                            fieldP = end.compareTo(start) > 0 ? cb.between(root.<LocalTime>get(key), start, end) : cb.between(root.<LocalTime>get(key), end, start);
+                        }
                     } else {
                         fieldP = cb.between(root.get(key).as(String.class), startVal, endVal);
                     }
@@ -568,7 +593,19 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     if (numberTypeList.contains(fieldType)) {
                         fieldP = cb.notEqual(root.get(key), convertType4PropertyValue(fieldType, startVal));
                     } else if (dateTypeList.contains(fieldType)) {
-                        fieldP = cb.notEqual(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        if (fieldType.equalsIgnoreCase("Date")) {
+                            Date start = DateTimeUtil.getDateFromString(startVal);
+                            fieldP = cb.notEqual(root.<Date>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
+                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
+                            fieldP = cb.notEqual(root.<LocalDateTime>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
+                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
+                            fieldP = cb.notEqual(root.<LocalDate>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
+                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
+                            fieldP = cb.notEqual(root.<LocalTime>get(key), start);
+                        }
                     } else {
                         fieldP = cb.notEqual(root.get(key), startVal);
                     }
@@ -578,7 +615,19 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                         // fieldP = cb.lessThan(root.get(key), convertType4PropertyValue(fieldType, startVal));
                         fieldP = cb.lt(root.get(key), convertType4PropertyValue(fieldType, startVal));
                     } else if (dateTypeList.contains(fieldType)) {
-                        fieldP = cb.lessThan(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        if (fieldType.equalsIgnoreCase("Date")) {
+                            Date start = DateTimeUtil.getDateFromString(startVal);
+                            fieldP = cb.lessThan(root.<Date>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
+                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
+                            fieldP = cb.lessThan(root.<LocalDateTime>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
+                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
+                            fieldP = cb.lessThan(root.<LocalDate>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
+                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
+                            fieldP = cb.lessThan(root.<LocalTime>get(key), start);
+                        }
                     } else {
                         fieldP = cb.lessThan(root.get(key).as(String.class), startVal);
                     }
@@ -588,7 +637,19 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                         // fieldP = cb.lessThanOrEqualTo(root.get(key), convertType4PropertyValue(fieldType, startVal));
                         fieldP = cb.le(root.get(key), convertType4PropertyValue(fieldType, startVal));
                     } else if (dateTypeList.contains(fieldType)) {
-                        fieldP = cb.lessThanOrEqualTo(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        if (fieldType.equalsIgnoreCase("Date")) {
+                            Date start = DateTimeUtil.getDateFromString(startVal);
+                            fieldP = cb.lessThanOrEqualTo(root.<Date>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
+                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
+                            fieldP = cb.lessThanOrEqualTo(root.<LocalDateTime>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
+                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
+                            fieldP = cb.lessThanOrEqualTo(root.<LocalDate>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
+                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
+                            fieldP = cb.lessThanOrEqualTo(root.<LocalTime>get(key), start);
+                        }
                     } else {
                         fieldP = cb.lessThanOrEqualTo(root.get(key).as(String.class), startVal);
                     }
@@ -598,7 +659,19 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                         // fieldP = cb.greaterThan(root.get(key), convertType4PropertyValue(fieldType, startVal));
                         fieldP = cb.gt(root.get(key), convertType4PropertyValue(fieldType, startVal));
                     } else if (dateTypeList.contains(fieldType)) {
-                        fieldP = cb.greaterThan(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        if (fieldType.equalsIgnoreCase("Date")) {
+                            Date start = DateTimeUtil.getDateFromString(startVal);
+                            fieldP = cb.greaterThan(root.<Date>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
+                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
+                            fieldP = cb.greaterThan(root.<LocalDateTime>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
+                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
+                            fieldP = cb.greaterThan(root.<LocalDate>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
+                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
+                            fieldP = cb.greaterThan(root.<LocalTime>get(key), start);
+                        }
                     } else {
                         fieldP = cb.greaterThan(root.get(key).as(String.class), startVal);
                     }
@@ -608,7 +681,19 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                         // fieldP = cb.greaterThanOrEqualTo(root.get(key), convertType4PropertyValue(fieldType, startVal));
                         fieldP = cb.ge(root.get(key), convertType4PropertyValue(fieldType, startVal));
                     } else if (dateTypeList.contains(fieldType)) {
-                        fieldP = cb.greaterThanOrEqualTo(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
+                        if (fieldType.equalsIgnoreCase("Date")) {
+                            Date start = DateTimeUtil.getDateFromString(startVal);
+                            fieldP = cb.greaterThanOrEqualTo(root.<Date>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
+                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
+                            fieldP = cb.greaterThanOrEqualTo(root.<LocalDateTime>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
+                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
+                            fieldP = cb.greaterThanOrEqualTo(root.<LocalDate>get(key), start);
+                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
+                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
+                            fieldP = cb.greaterThanOrEqualTo(root.<LocalTime>get(key), start);
+                        }
                     } else {
                         fieldP = cb.greaterThanOrEqualTo(root.get(key).as(String.class), startVal);
                     }
@@ -631,12 +716,35 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     List<String> valueList = Arrays.asList(values);
                     // 日期类型特殊处理
                     if (dateTypeList.contains(fieldType)) {
-                        List<Date> valueDateList = new ArrayList<>();
-                        valueList.forEach(v -> {
-                            valueDateList.add(DateTimeUtil.getDateFromString(v));
-                        });
-                        Expression<Date> exp = root.<Date>get(key);
-                        fieldP = exp.in(valueDateList);
+                        if (fieldType.equalsIgnoreCase("Date")) {
+                            List<Date> valueDateList = new ArrayList<>();
+                            valueList.forEach(v -> {
+                                valueDateList.add(DateTimeUtil.getDateFromString(v));
+                            });
+                            Expression<Date> exp = root.<Date>get(key);
+                            fieldP = exp.in(valueDateList);
+                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
+                            List<LocalDateTime> valueDateList = new ArrayList<>();
+                            valueList.forEach(v -> {
+                                valueDateList.add(DateTimeUtil.getLocalDateTimeFromString(v));
+                            });
+                            Expression<LocalDateTime> exp = root.<LocalDateTime>get(key);
+                            fieldP = exp.in(valueDateList);
+                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
+                            List<LocalDate> valueDateList = new ArrayList<>();
+                            valueList.forEach(v -> {
+                                valueDateList.add(DateTimeUtil.getLocalDateFromString(v));
+                            });
+                            Expression<LocalDate> exp = root.<LocalDate>get(key);
+                            fieldP = exp.in(valueDateList);
+                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
+                            List<LocalTime> valueDateList = new ArrayList<>();
+                            valueList.forEach(v -> {
+                                valueDateList.add(DateTimeUtil.getLocalTimeFromString(v));
+                            });
+                            Expression<LocalTime> exp = root.<LocalTime>get(key);
+                            fieldP = exp.in(valueDateList);
+                        }
                     } else {
                         Expression exp = root.get(key);
                         fieldP = exp.in(valueList);
@@ -770,12 +878,13 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     // 三个方法是：registObservers,notifyOthers,update                                        #
     // 此处使用了jdk自带的观察者的设计模式。  当前对象既是被观察者，也是观察者!                          #
     // ######################################################################################
+
     /**
      * 注册观察者,即哪些组件观察自己，让子类调用此方法实现观察者注册
      */
     @Override
-    public void registObservers(Observer... observers){
-        for (Observer observer: observers) {
+    public void registObservers(Observer... observers) {
+        for (Observer observer : observers) {
             this.addObserver(observer);
         }
     }
@@ -785,13 +894,13 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
      * 通常的增删改的方法都需要调用这个方法，来维持 cache right!
      */
     @Override
-    public void notifyOthers(){
+    public void notifyOthers() {
         //注意在用Java中的Observer模式的时候i下面这句话不可少
         this.setChanged();
         // 然后主动通知， 这里用的是推的方式
         // this.notifyObservers(this.content);
         // 如果用拉的方式，这么调用
-         this.notifyObservers();
+        this.notifyObservers();
     }
 
     /**
@@ -799,7 +908,8 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
      * 其实此处不需要被观察者的任何数据，只是为了知道被观察者状态变了，自己的相关缓存也就需要清除了，否则不一致
      * 例如：观察Ａ对象，但是Ａ对象被删除了，那个自己这边关联查询与Ａ有关的缓存都应该清除
      * 子类重写此方法在方法前面加上清除缓存的注解，或者在方法体内具体执行一些清除缓存的代码。
-     * @param o 被观察的对象
+     *
+     * @param o   被观察的对象
      * @param arg 传递的数据
      */
     @Override
