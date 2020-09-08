@@ -16,10 +16,6 @@ This is a project based on SpringDataJPA. From Controller-> Service-> Repository
 - Increased handling of the underlying database exception;
 - Desensitization of sensitive information
 
-# V5.0.0 Plan
-- Support for multi-tenancy
-- ...
-
 # Attention
 - Please do not use the code of the master branch directly, it may be very unstable in development, you can use the released branch!
 
