@@ -161,7 +161,7 @@ public class BaseController<T1 extends BaseEntity, T2 extends IBaseService, ID> 
         Optional entity = entityService.findById(id);
 
         if (entity.isPresent()) {
-            return R.ok().setData(entity);
+            return R.ok().setData(entity.get());
         } else {
             return R.error(CommDBEnum.SELECT_NON_EXISTENT);
         }
