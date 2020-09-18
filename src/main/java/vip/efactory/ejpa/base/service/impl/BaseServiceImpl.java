@@ -15,7 +15,6 @@ import org.springframework.util.StringUtils;
 import vip.efactory.common.base.entity.BaseSearchField;
 import vip.efactory.common.base.enums.ConditionRelationEnum;
 import vip.efactory.common.base.enums.SearchTypeEnum;
-import vip.efactory.common.base.utils.DateTimeUtil;
 import vip.efactory.common.base.utils.MapUtil;
 import vip.efactory.common.base.utils.SQLFilter;
 import vip.efactory.ejpa.base.entity.BaseEntity;
@@ -30,11 +29,6 @@ import javax.persistence.criteria.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -52,42 +46,6 @@ import java.util.*;
 public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository> extends Observable implements IBaseService<T, ID>, Observer {
     // 默认组的名称
     private final String DEFAULT_GROUP_NAME = "DEFAULT_NO_GROUP";
-    // 常见的数字类型
-    private static List<String> numberTypeList;
-    // 常见日期时间类型
-    private static List<String> dateTypeList;
-
-    static { // 静态初始化以便提高性能
-        // 保存常见的数字类型，以便避免逐个枚举类型处理
-        numberTypeList = new ArrayList<>();
-        numberTypeList.add("byte");
-        numberTypeList.add("Byte");
-        numberTypeList.add("short");
-        numberTypeList.add("Short");
-        numberTypeList.add("int");
-        numberTypeList.add("Integer");
-        numberTypeList.add("Long");
-        numberTypeList.add("long");
-        numberTypeList.add("float");
-        numberTypeList.add("Float");
-        numberTypeList.add("double");
-        numberTypeList.add("Double");
-        numberTypeList.add("BigInteger");
-        numberTypeList.add("BigDecimal");
-        // numberTypeList.add("AtomicInteger"); // 注释掉就说明JPA目前还不支持这些类型，类型来源于JDK
-        // numberTypeList.add("AtomicLong");
-        // numberTypeList.add("DoubleAccumulator");
-        // numberTypeList.add("DoubleAdder");
-        // numberTypeList.add("LongAccumulator");
-        // numberTypeList.add("LongAdder");
-
-        // 保存常见的日期时间类型
-        dateTypeList = new ArrayList<>();
-        dateTypeList.add("Date");
-        dateTypeList.add("LocalDateTime");
-        dateTypeList.add("LocalTime");
-        dateTypeList.add("LocalDate");
-    }
 
     @PersistenceContext
     protected EntityManager em;
@@ -440,14 +398,14 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 
 
     /**
-     * Description:利用反射获取属性的类型
+     * Description:利用反射获取属性的字符串类型
      *
      * @param [key, entity]
      * @return java.lang.String
      * @author dbdu
      * @date 19-7-7 下午6:10
      */
-    private String getPropType(String key, T entity) {
+    private String getPropTypeString(String key, T entity) {
         Class clazz = entity.getClass();
         List<Field> fieldList = new ArrayList<>();  //存
         while (clazz != null) {
@@ -462,6 +420,31 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         }
 
         return "";
+    }
+
+    /**
+     * Description:利用反射获取属性的反射类型
+     *
+     * @param [key, entity]
+     * @return Class<?>
+     * @author dbdu
+     * @date 19-7-7 下午6:10
+     */
+    private Class<?> getPropType(String key, T entity) {
+        Class clazz = entity.getClass();
+        List<Field> fieldList = new ArrayList<>();  //存
+        while (clazz != null) {
+            fieldList.addAll(new ArrayList<>(Arrays.asList(clazz.getDeclaredFields())));
+            clazz = clazz.getSuperclass();
+        }
+
+        for (Field field : fieldList) {
+            if (field.getName().equals(key)) {
+                return field.getType();
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -545,155 +528,56 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
             String startVal = field.getVal();      // 开始值
             String endVal = field.getVal2();    // 结束值
             // 处理查询值的类型转换
-            String fieldType = getPropType(key, entity); //直接通过当前实体或者父类来获取属性的类型
+            String fieldTypeString = getPropTypeString(key, entity); //直接通过当前实体或者父类来获取属性的类型
+            Class<?> fieldType = getPropType(key, entity); //直接通过当前实体或者父类来获取属性的类型
             switch (searchType) {                   // cb支持更多的方法,此处仅使用常用的!
                 case 1:     //  EQ(1, "等于查询"),
-                    if (numberTypeList.contains(fieldType)) {
-                        fieldP = cb.equal(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (dateTypeList.contains(fieldType)) {
-                        if (fieldType.equalsIgnoreCase("Date")) {
-                            fieldP = cb.equal(root.<Date>get(key), DateTimeUtil.getDateFromString(startVal));
-                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
-                            fieldP = cb.equal(root.<LocalDateTime>get(key), DateTimeUtil.getLocalDateTimeFromString(startVal));
-                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
-                            fieldP = cb.equal(root.<LocalDate>get(key), DateTimeUtil.getLocalDateFromString(startVal));
-                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
-                            fieldP = cb.equal(root.<LocalTime>get(key), DateTimeUtil.getLocalTimeFromString(startVal));
-                        }
+                    if (!"String".equalsIgnoreCase(fieldTypeString)) {
+                        fieldP = cb.equal(root.get(key).as((Class<? extends Comparable>) fieldType), (Comparable) startVal);
                     } else {
                         fieldP = cb.equal(root.get(key).as(String.class), startVal);
                     }
                     break;
                 case 2:     //  RANGE(2, "范围查询"),  如果结束值大于开始值，则交换位置避免查不到数据
-                    if (numberTypeList.contains(fieldType)) {
-                        fieldP = getPredicate4NumberBetweenConditiong(root, cb, key, fieldType, startVal, endVal);
-                    } else if (dateTypeList.contains(fieldType)) {
-                        if (fieldType.equalsIgnoreCase("Date")) {
-                            Date start = DateTimeUtil.getDateFromString(startVal);
-                            Date end = DateTimeUtil.getDateFromString(endVal);
-                            fieldP = end.compareTo(start) > 0 ? cb.between(root.<Date>get(key), start, end) : cb.between(root.<Date>get(key), end, start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
-                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
-                            LocalDateTime end = DateTimeUtil.getLocalDateTimeFromString(endVal);
-                            fieldP = end.compareTo(start) > 0 ? cb.between(root.<LocalDateTime>get(key), start, end) : cb.between(root.<LocalDateTime>get(key), end, start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
-                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
-                            LocalDate end = DateTimeUtil.getLocalDateFromString(endVal);
-                            fieldP = end.compareTo(start) > 0 ? cb.between(root.<LocalDate>get(key), start, end) : cb.between(root.<LocalDate>get(key), end, start);
-                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
-                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
-                            LocalTime end = DateTimeUtil.getLocalTimeFromString(endVal);
-                            fieldP = end.compareTo(start) > 0 ? cb.between(root.<LocalTime>get(key), start, end) : cb.between(root.<LocalTime>get(key), end, start);
-                        }
+                    if (!"String".equalsIgnoreCase(fieldTypeString)) {
+                        Comparable start = (Comparable) startVal;
+                        Comparable end = (Comparable) endVal;
+                        fieldP = end.compareTo(start) > 0 ? cb.between(root.get(key).as((Class<? extends Comparable>) fieldType), start, end) : cb.between(root.get(key).as((Class<? extends Comparable>) fieldType), end, start);
                     } else {
                         fieldP = cb.between(root.get(key).as(String.class), startVal, endVal);
                     }
                     break;
                 case 3:     //  NE(3, "不等于查询"),
-                    if (numberTypeList.contains(fieldType)) {
-                        fieldP = cb.notEqual(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (dateTypeList.contains(fieldType)) {
-                        if (fieldType.equalsIgnoreCase("Date")) {
-                            Date start = DateTimeUtil.getDateFromString(startVal);
-                            fieldP = cb.notEqual(root.<Date>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
-                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
-                            fieldP = cb.notEqual(root.<LocalDateTime>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
-                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
-                            fieldP = cb.notEqual(root.<LocalDate>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
-                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
-                            fieldP = cb.notEqual(root.<LocalTime>get(key), start);
-                        }
+                    if (!"String".equalsIgnoreCase(fieldTypeString)) {
+                        fieldP = cb.notEqual(root.get(key), startVal);
                     } else {
                         fieldP = cb.notEqual(root.get(key), startVal);
                     }
                     break;
                 case 4:     //  LT(4, "小于查询"),
-                    if (numberTypeList.contains(fieldType)) {
-                        // fieldP = cb.lessThan(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                        fieldP = cb.lt(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (dateTypeList.contains(fieldType)) {
-                        if (fieldType.equalsIgnoreCase("Date")) {
-                            Date start = DateTimeUtil.getDateFromString(startVal);
-                            fieldP = cb.lessThan(root.<Date>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
-                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
-                            fieldP = cb.lessThan(root.<LocalDateTime>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
-                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
-                            fieldP = cb.lessThan(root.<LocalDate>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
-                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
-                            fieldP = cb.lessThan(root.<LocalTime>get(key), start);
-                        }
+                    if (!"String".equalsIgnoreCase(fieldTypeString)) {
+                        fieldP = cb.lessThan(root.get(key).as((Class<? extends Comparable>) fieldType), (Comparable) startVal);
                     } else {
                         fieldP = cb.lessThan(root.get(key).as(String.class), startVal);
                     }
                     break;
                 case 5:     //  LE(5, "小于等于查询"),
-                    if (numberTypeList.contains(fieldType)) {
-                        // fieldP = cb.lessThanOrEqualTo(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                        fieldP = cb.le(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (dateTypeList.contains(fieldType)) {
-                        if (fieldType.equalsIgnoreCase("Date")) {
-                            Date start = DateTimeUtil.getDateFromString(startVal);
-                            fieldP = cb.lessThanOrEqualTo(root.<Date>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
-                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
-                            fieldP = cb.lessThanOrEqualTo(root.<LocalDateTime>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
-                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
-                            fieldP = cb.lessThanOrEqualTo(root.<LocalDate>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
-                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
-                            fieldP = cb.lessThanOrEqualTo(root.<LocalTime>get(key), start);
-                        }
+                    if (!"String".equalsIgnoreCase(fieldTypeString)) {
+                        fieldP = cb.lessThanOrEqualTo(root.get(key).as((Class<? extends Comparable>) fieldType), (Comparable) startVal);
                     } else {
                         fieldP = cb.lessThanOrEqualTo(root.get(key).as(String.class), startVal);
                     }
                     break;
                 case 6:     //  GT(6, "大于查询"),
-                    if (numberTypeList.contains(fieldType)) {
-                        // fieldP = cb.greaterThan(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                        fieldP = cb.gt(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (dateTypeList.contains(fieldType)) {
-                        if (fieldType.equalsIgnoreCase("Date")) {
-                            Date start = DateTimeUtil.getDateFromString(startVal);
-                            fieldP = cb.greaterThan(root.<Date>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
-                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
-                            fieldP = cb.greaterThan(root.<LocalDateTime>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
-                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
-                            fieldP = cb.greaterThan(root.<LocalDate>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
-                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
-                            fieldP = cb.greaterThan(root.<LocalTime>get(key), start);
-                        }
+                    if (!"String".equalsIgnoreCase(fieldTypeString)) {
+                        fieldP = cb.greaterThan(root.get(key).as((Class<? extends Comparable>) fieldType), (Comparable) startVal);
                     } else {
                         fieldP = cb.greaterThan(root.get(key).as(String.class), startVal);
                     }
                     break;
                 case 7:     //  GE(7, "大于等于查询");
-                    if (numberTypeList.contains(fieldType)) {
-                        // fieldP = cb.greaterThanOrEqualTo(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                        fieldP = cb.ge(root.get(key), convertType4PropertyValue(fieldType, startVal));
-                    } else if (dateTypeList.contains(fieldType)) {
-                        if (fieldType.equalsIgnoreCase("Date")) {
-                            Date start = DateTimeUtil.getDateFromString(startVal);
-                            fieldP = cb.greaterThanOrEqualTo(root.<Date>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
-                            LocalDateTime start = DateTimeUtil.getLocalDateTimeFromString(startVal);
-                            fieldP = cb.greaterThanOrEqualTo(root.<LocalDateTime>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
-                            LocalDate start = DateTimeUtil.getLocalDateFromString(startVal);
-                            fieldP = cb.greaterThanOrEqualTo(root.<LocalDate>get(key), start);
-                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
-                            LocalTime start = DateTimeUtil.getLocalTimeFromString(startVal);
-                            fieldP = cb.greaterThanOrEqualTo(root.<LocalTime>get(key), start);
-                        }
+                    if (!"String".equalsIgnoreCase(fieldTypeString)) {
+                        fieldP = cb.greaterThanOrEqualTo(root.get(key).as((Class<? extends Comparable>) fieldType), (Comparable) startVal);
                     } else {
                         fieldP = cb.greaterThanOrEqualTo(root.get(key).as(String.class), startVal);
                     }
@@ -714,37 +598,14 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                     // 切分属性值为集合
                     String[] values = startVal.split(",|;|、|，|；"); // 支持的分隔符：中英文的逗号分号，和中文的顿号！
                     List<String> valueList = Arrays.asList(values);
-                    // 日期类型特殊处理
-                    if (dateTypeList.contains(fieldType)) {
-                        if (fieldType.equalsIgnoreCase("Date")) {
-                            List<Date> valueDateList = new ArrayList<>();
-                            valueList.forEach(v -> {
-                                valueDateList.add(DateTimeUtil.getDateFromString(v));
-                            });
-                            Expression<Date> exp = root.<Date>get(key);
-                            fieldP = exp.in(valueDateList);
-                        } else if (fieldType.equalsIgnoreCase("LocalDateTime")) {
-                            List<LocalDateTime> valueDateList = new ArrayList<>();
-                            valueList.forEach(v -> {
-                                valueDateList.add(DateTimeUtil.getLocalDateTimeFromString(v));
-                            });
-                            Expression<LocalDateTime> exp = root.<LocalDateTime>get(key);
-                            fieldP = exp.in(valueDateList);
-                        } else if (fieldType.equalsIgnoreCase("LocalDate")) {
-                            List<LocalDate> valueDateList = new ArrayList<>();
-                            valueList.forEach(v -> {
-                                valueDateList.add(DateTimeUtil.getLocalDateFromString(v));
-                            });
-                            Expression<LocalDate> exp = root.<LocalDate>get(key);
-                            fieldP = exp.in(valueDateList);
-                        } else if (fieldType.equalsIgnoreCase("LocalTime")) {
-                            List<LocalTime> valueDateList = new ArrayList<>();
-                            valueList.forEach(v -> {
-                                valueDateList.add(DateTimeUtil.getLocalTimeFromString(v));
-                            });
-                            Expression<LocalTime> exp = root.<LocalTime>get(key);
-                            fieldP = exp.in(valueDateList);
-                        }
+                    // 不是String类型的特殊处理
+                    if (!"String".equalsIgnoreCase(fieldTypeString)) {
+                        List<Comparable> valueDateList = new ArrayList<>();
+                        valueList.forEach(v -> {
+                            valueDateList.add((Comparable) v);
+                        });
+                        Expression<Comparable> exp = root.<Comparable>get(key);
+                        fieldP = exp.in(valueDateList);
                     } else {
                         Expression exp = root.get(key);
                         fieldP = exp.in(valueList);
@@ -801,78 +662,6 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         return groups;
     }
 
-    // 将查询条件的值转换为对应类型的值
-    private Number convertType4PropertyValue(String type, String value) {
-        if ("Byte".equalsIgnoreCase(type)) {
-            return Byte.valueOf(value);
-        } else if ("Short".equalsIgnoreCase(type)) {
-            return Short.valueOf(value);
-        } else if ("int".equals(type) || "Integer".equals(type)) {
-            return Integer.valueOf(value);
-        } else if ("Long".equalsIgnoreCase(type)) {
-            return Long.valueOf(value);
-        } else if ("Float".equalsIgnoreCase(type)) {
-            return Float.valueOf(value);
-        } else if ("Double".equalsIgnoreCase(type)) {
-            return Double.valueOf(value);
-        } else if ("BigInteger".equalsIgnoreCase(type)) {
-            return new BigInteger(value);
-        } else if ("BigDecimal".equalsIgnoreCase(type)) {
-            return new BigDecimal(value);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * 专门用于处理Number子类的区间查询条件的生成，此处之所以枚举类型，是因为内置的不支持这种的泛型！
-     *
-     * @param root
-     * @param cb
-     * @param key
-     * @param fieldType
-     * @param startVal
-     * @param endVal
-     * @return
-     */
-    private Predicate getPredicate4NumberBetweenConditiong(Root<T> root, CriteriaBuilder cb, String key, String fieldType, String startVal, String endVal) {
-        if ("Byte".equalsIgnoreCase(fieldType)) {
-            Byte start = Byte.valueOf(startVal);
-            Byte end = Byte.valueOf(endVal);
-            return end >= start ? cb.between(root.<Byte>get(key), start, end) : cb.between(root.<Byte>get(key), end, start);
-        } else if ("Short".equalsIgnoreCase(fieldType)) {
-            Short start = Short.valueOf(startVal);
-            Short end = Short.valueOf(endVal);
-            return end >= start ? cb.between(root.<Short>get(key), start, end) : cb.between(root.<Short>get(key), end, start);
-        } else if ("int".equals(fieldType) || "Integer".equals(fieldType)) {
-            Integer start = Integer.valueOf(startVal);
-            Integer end = Integer.valueOf(endVal);
-            return end >= start ? cb.between(root.<Integer>get(key), start, end) : cb.between(root.<Integer>get(key), end, start);
-        } else if ("Long".equalsIgnoreCase(fieldType)) {
-            Long start = Long.valueOf(startVal);
-            Long end = Long.valueOf(endVal);
-            return end >= start ? cb.between(root.<Long>get(key), start, end) : cb.between(root.<Long>get(key), end, start);
-        } else if ("Float".equalsIgnoreCase(fieldType)) {
-            Float start = Float.valueOf(startVal);
-            Float end = Float.valueOf(endVal);
-            return end >= start ? cb.between(root.<Float>get(key), start, end) : cb.between(root.<Float>get(key), end, start);
-        } else if ("Double".equalsIgnoreCase(fieldType)) {
-            Double start = Double.valueOf(startVal);
-            Double end = Double.valueOf(endVal);
-            return end >= start ? cb.between(root.<Double>get(key), start, end) : cb.between(root.<Double>get(key), end, start);
-        } else if ("BigInteger".equalsIgnoreCase(fieldType)) {
-            BigInteger start = new BigInteger(startVal);
-            BigInteger end = new BigInteger(endVal);
-            return end.compareTo(start) > 0 ? cb.between(root.<BigInteger>get(key), start, end) : cb.between(root.<BigInteger>get(key), end, start);
-        } else if ("BigDecimal".equalsIgnoreCase(fieldType)) {
-            BigDecimal start = new BigDecimal(startVal);
-            BigDecimal end = new BigDecimal(endVal);
-            return end.compareTo(start) > 0 ? cb.between(root.<BigDecimal>get(key), start, end) : cb.between(root.<BigDecimal>get(key), end, start);
-        } else {
-            return null;
-        }
-    }
-
     // ######################################################################################
     // 注意下面的三个方法是是维护多表关联查询结果缓存的一致性的，除非你知道在做什么，否则不要去修改!         #
     // 三个方法是：registObservers,notifyOthers,update                                        #
@@ -892,6 +681,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     /**
      * 自己的状态改变了，通知所有依赖自己的组件进行缓存清除，
      * 通常的增删改的方法都需要调用这个方法，来维持 cache right!
+     *
      * @param arg 通知观察者时可以传递礼物arg，即数据，如果不需要数据就传递null;
      */
     @Override

@@ -5,10 +5,11 @@
 
     <groupId>vip.efactory</groupId>
     <artifactId>ejpa</artifactId>
-    <version>4.0.1</version>
+    <version>4.1.0</version>
     <packaging>jar</packaging>
     <name>ejpa</name>
-    <description>基于jpa再封装,常用的模板CRUD,分页排序,多字段高级搜索,国际化，多租户等功能，https://github.com/vip-efactory/ejpa </description>
+    <description>基于jpa再封装,常用的模板CRUD,分页排序,多字段高级搜索,国际化，多租户等功能
+        (Re-encapsulation based on Spring Data jpa, commonly used template CRUD, paging sort, multi-field advanced search, internationalization, multi-tenancy and other functions)，https://github.com/vip-efactory/ejpa </description>
 
     <properties>
         <java.version>1.8</java.version>
