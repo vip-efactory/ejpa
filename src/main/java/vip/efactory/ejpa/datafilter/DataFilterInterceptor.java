@@ -1,9 +1,9 @@
 package vip.efactory.ejpa.datafilter;
 
 import cn.hutool.core.collection.CollectionUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.resource.jdbc.spi.StatementInspector;
 import org.springframework.util.CollectionUtils;
-import vip.efactory.common.base.utils.SpringContextHolder;
 
 import java.util.List;
 
@@ -12,11 +12,12 @@ import java.util.List;
  *
  * @author dusuanyun
  */
+@Slf4j
 public class DataFilterInterceptor implements StatementInspector {
 
     @Override
     public String inspect(String sql) {
-        System.out.println("进入拦截器" + sql);
+        log.info("进入拦截器:" + sql);
         String originalSql = sql;
 
         // 查找参数中包含DataScope类型的参数
@@ -29,8 +30,9 @@ public class DataFilterInterceptor implements StatementInspector {
         String scopeName = dataFilter.getFilterPropName();
         List<Long> deptIds = dataFilter.getDeptIds();
         // 优先获取赋值数据
-        DataFilterCalculator dataFilterCalculator = SpringContextHolder.getBean(DataFilterCalculator.class);
-        if (CollectionUtils.isEmpty(deptIds) && dataFilterCalculator.calcScope(deptIds)) {
+//        DataFilterCalculator dataFilterCalculator = SpringContextHolder.getBean(DataFilterCalculator.class);
+//        if (CollectionUtils.isEmpty(deptIds) && dataFilterCalculator.calcScope(deptIds)) {
+        if (CollectionUtils.isEmpty(deptIds)) {
             originalSql = String.format("SELECT %s FROM (%s) tmp_tbl_data_filter", dataFilter.getFunc().getType(),
                     originalSql);
             return originalSql;
@@ -43,6 +45,7 @@ public class DataFilterInterceptor implements StatementInspector {
             originalSql = String.format("SELECT %s FROM (%s) tmp_tbl_data_filter WHERE tmp_tbl_data_filter.%s IN (%s)",
                     dataFilter.getFunc().getType(), originalSql, scopeName, join);
         }
-        return sql;
+        log.info("最终执行SQL:" + originalSql);
+        return originalSql;
     }
 }

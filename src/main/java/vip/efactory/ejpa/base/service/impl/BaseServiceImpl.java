@@ -714,6 +714,16 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     }
 
     /***************************************以下是数据范围相关的查询方法实现***************************************************/
+
+
+    @Override
+    public Page<T> findAll(Pageable page, DataFilter filter) {
+        DataFilterContextHolder.setDataFilter(filter);
+        Page<T> page2 = br.findAll(page);
+        DataFilterContextHolder.removeDataFilter();
+        return page2;
+    }
+
     @Override
     public <S extends T> Iterable<S> getListByFilter(Specification<S> spec, DataFilter filter) {
         DataFilterContextHolder.setDataFilter(filter);

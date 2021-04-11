@@ -1,10 +1,8 @@
 package vip.efactory.ejpa.datafilter;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -12,8 +10,9 @@ import java.util.List;
  * @author dbdu
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class DataFilter extends HashMap {
+//@EqualsAndHashCode(callSuper = true)
+//public class DataFilter extends HashMap  {
+public class DataFilter {
 
 	/**
 	 * 过滤范围的属性名称

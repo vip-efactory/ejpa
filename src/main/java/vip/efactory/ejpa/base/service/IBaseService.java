@@ -223,11 +223,12 @@ public interface IBaseService<T extends BaseEntity, ID> {
     /**
      * Description: 根据实体的属性名称判断，实体是否存在,
      * 注意：使用此方法，要自己保证属性名称的正确性，否则抛异常！
-     * @param propertyName 实体的属性名，暂时支持字符串类型
+     *
+     * @param propertyName  实体的属性名，暂时支持字符串类型
      * @param propertyValue 实体的属性名对应的值,仅支持简单的基本类型的值为字符串的，不支持其他的自定义类的类型
      * @return boolean true实体存在；false 不存在。
      */
-    boolean existsByEntityProperty(String propertyName,String propertyValue) throws NoSuchFieldException;
+    boolean existsByEntityProperty(String propertyName, String propertyValue) throws NoSuchFieldException;
 
     /**
      * Description:使用主键批量删除
@@ -294,6 +295,7 @@ public interface IBaseService<T extends BaseEntity, ID> {
     /**
      * 自己的状态改变了，通知所有依赖自己的组件进行缓存清除，
      * 通常的增删改的方法都需要调用这个方法，来维持缓存一致性
+     *
      * @param arg 通知观察者时可以传递礼物arg，即数据，如果不需要数据就传递null;
      */
     @Async
@@ -312,6 +314,16 @@ public interface IBaseService<T extends BaseEntity, ID> {
     void update(Observable o, Object arg);
 
     /***************************************以下是数据范围相关的查询方法***************************************************/
+
+
+    /**
+     * Description: 带数据过滤的分页对象
+     *
+     * @param var1   分页对象
+     * @param filter 分页对象
+     * @return Page
+     */
+    Page<T> findAll(Pageable var1, DataFilter filter);
 
     /**
      * 根据查询条件及过滤条件查询列表数据
