@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 @Slf4j
 @Getter
 @ComponentScans(value = {@ComponentScan("vip.efactory.ejpa.*")})
+//@EnableJpaRepositories(repositoryBaseClass = DataFilterRepositoryImpl.class)
 public class EjpaAutoConfiguration {
 
     @PostConstruct

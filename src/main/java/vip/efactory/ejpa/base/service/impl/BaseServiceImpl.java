@@ -20,6 +20,8 @@ import vip.efactory.common.base.utils.SQLFilter;
 import vip.efactory.ejpa.base.entity.BaseEntity;
 import vip.efactory.ejpa.base.repository.BaseRepository;
 import vip.efactory.ejpa.base.service.IBaseService;
+import vip.efactory.ejpa.datafilter.DataFilter;
+import vip.efactory.ejpa.datafilter.DataFilterContextHolder;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -709,6 +711,52 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
     @Override
     public void update(Observable o, Object arg) {
 
+    }
+
+    /***************************************以下是数据范围相关的查询方法实现***************************************************/
+    @Override
+    public <S extends T> Iterable<S> getListByFilter(Specification<S> spec, DataFilter filter) {
+        DataFilterContextHolder.setDataFilter(filter);
+        List<S> data = br.findAll(spec);
+        DataFilterContextHolder.removeDataFilter();
+        return data;
+    }
+
+    @Override
+    public <S extends T> Page<S> getPageByFilter(Pageable pageable, Specification<S> spec, DataFilter filter) {
+        DataFilterContextHolder.setDataFilter(filter);
+        Page<S> page = br.findAll(spec, pageable);
+        DataFilterContextHolder.removeDataFilter();
+        return page;
+    }
+
+//    @Override
+//    public <S extends T> long getCountByFilter(Specification<S> spec, DataFilter filter) {
+//        return 0;
+//    }
+
+    @Override
+    public <S extends T> Iterable<S> findAllByFilter(Example<S> example, DataFilter filter) {
+        DataFilterContextHolder.setDataFilter(filter);
+        List<S> data = br.findAll(example);
+        DataFilterContextHolder.removeDataFilter();
+        return data;
+    }
+
+    @Override
+    public <S extends T> Page<S> findPageByFilter(Example<S> example, Pageable pageable, DataFilter filter) {
+        DataFilterContextHolder.setDataFilter(filter);
+        Page<S> page = br.findAll(example,pageable);
+        DataFilterContextHolder.removeDataFilter();
+        return page;
+    }
+
+    @Override
+    public <S extends T> long findCountByFilter(Example<S> example, DataFilter filter) {
+        DataFilterContextHolder.setDataFilter(filter);
+        long count = br.count(example);
+        DataFilterContextHolder.removeDataFilter();
+        return count;
     }
 
 //    public static void main(String[] args) {

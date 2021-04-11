@@ -22,6 +22,7 @@
         <validation.api.version>2.0.1.Final</validation.api.version>
         <ali.ttl.version>2.11.4</ali.ttl.version>
         <querydsl.version>4.3.1</querydsl.version>
+        <hutool.version>5.5.8</hutool.version>
     </properties>
 
     <dependencies>
@@ -110,7 +111,11 @@
             <artifactId>validation-api</artifactId>
             <version>${validation.api.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
     </dependencies>
 
     <url>https://github.com/vip-efactory/ejpa</url>
