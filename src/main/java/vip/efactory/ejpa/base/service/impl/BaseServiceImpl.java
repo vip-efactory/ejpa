@@ -21,7 +21,6 @@ import vip.efactory.ejpa.base.entity.BaseEntity;
 import vip.efactory.ejpa.base.repository.BaseRepository;
 import vip.efactory.ejpa.base.service.IBaseService;
 import vip.efactory.ejpa.datafilter.DataFilter;
-import vip.efactory.ejpa.datafilter.DataFilterContextHolder;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -284,6 +283,27 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
             return br.findAll(specification, pageable);
         } else {
             return br.findAll(pageable);
+        }
+    }
+
+    /**
+     * Description: 高级查询带分页的功能,如果没有查询条件,仅分页返回
+     *
+     * @param [entity]     含有高级条件的实体
+     * @param [pageable]   分页参数
+     * @param [dataFilter] 数据过滤范围，优先级高于高级搜索
+     * @return org.springframework.data.domain.Page<T>
+     * @author dbdu
+     * @date 19-7-5 下午12:27
+     */
+    @Override
+    public Page<T> advancedQuery(T entity, Pageable pageable, DataFilter dataFilter) {
+        if (entity.getConditions() != null && entity.getConditions().size() > 0) {
+            //构造动态查询的条件
+            Specification<T> specification = getSpecification(entity);
+            return getPageByFilter(pageable, specification, dataFilter);
+        } else {
+            return getPageByFilter(pageable, dataFilter);
         }
     }
 
@@ -715,28 +735,53 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 
     /***************************************以下是数据范围相关的查询方法实现***************************************************/
 
+    /**
+     * 处理数据范围查询条件的查询条件转换
+     */
+    private Specification<T> handleDataFilterCondition(DataFilter filter) {
+
+        return new Specification<T>() {
+            @Override
+            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                String key = filter.getFilterPropName();
+                List<Long> valueList = filter.getDeptIds();
+
+                Expression<Comparable> exp = root.<Comparable>get(key);
+                Predicate finalPredicat = exp.in(valueList);
+                return finalPredicat;
+            }
+        };
+    }
+
 
     @Override
     public Page<T> findAll(Pageable page, DataFilter filter) {
-        DataFilterContextHolder.setDataFilter(filter);
-        Page<T> page2 = br.findAll(page);
-        DataFilterContextHolder.removeDataFilter();
+        // TODO 检测实体是否包含过滤的属性
+        Specification<T> spec = handleDataFilterCondition(filter);
+        Page<T> page2 = br.findAll(spec, page);
         return page2;
     }
 
     @Override
-    public <S extends T> Iterable<S> getListByFilter(Specification<S> spec, DataFilter filter) {
-        DataFilterContextHolder.setDataFilter(filter);
-        List<S> data = br.findAll(spec);
-        DataFilterContextHolder.removeDataFilter();
+    public Iterable<T> getListByFilter(Specification<T> spec, DataFilter filter) {
+        Specification<T> filterSpec = handleDataFilterCondition(filter);
+        Specification<T> finalSpec = filterSpec.and(spec);
+        List<T> data = br.findAll(finalSpec);
         return data;
     }
 
     @Override
-    public <S extends T> Page<S> getPageByFilter(Pageable pageable, Specification<S> spec, DataFilter filter) {
-        DataFilterContextHolder.setDataFilter(filter);
-        Page<S> page = br.findAll(spec, pageable);
-        DataFilterContextHolder.removeDataFilter();
+    public Page<T> getPageByFilter(Pageable pageable, DataFilter filter) {
+        Specification<T> filterSpec = handleDataFilterCondition(filter);
+        Page<T> page = br.findAll(filterSpec, pageable);
+        return page;
+    }
+
+    @Override
+    public Page<T> getPageByFilter(Pageable pageable, Specification<T> spec, DataFilter filter) {
+        Specification<T> filterSpec = handleDataFilterCondition(filter);
+        Specification<T> finalSpec = filterSpec.and(spec);
+        Page<T> page = br.findAll(finalSpec, pageable);
         return page;
     }
 
@@ -745,29 +790,29 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
 //        return 0;
 //    }
 
-    @Override
-    public <S extends T> Iterable<S> findAllByFilter(Example<S> example, DataFilter filter) {
-        DataFilterContextHolder.setDataFilter(filter);
-        List<S> data = br.findAll(example);
-        DataFilterContextHolder.removeDataFilter();
-        return data;
-    }
-
-    @Override
-    public <S extends T> Page<S> findPageByFilter(Example<S> example, Pageable pageable, DataFilter filter) {
-        DataFilterContextHolder.setDataFilter(filter);
-        Page<S> page = br.findAll(example,pageable);
-        DataFilterContextHolder.removeDataFilter();
-        return page;
-    }
-
-    @Override
-    public <S extends T> long findCountByFilter(Example<S> example, DataFilter filter) {
-        DataFilterContextHolder.setDataFilter(filter);
-        long count = br.count(example);
-        DataFilterContextHolder.removeDataFilter();
-        return count;
-    }
+//    @Override
+//    public <S extends T> Iterable<S> findAllByFilter(Example<S> example, DataFilter filter) {
+//        DataFilterContextHolder.setDataFilter(filter);
+//        List<S> data = br.findAll(example);
+//        DataFilterContextHolder.removeDataFilter();
+//        return data;
+//    }
+//
+//    @Override
+//    public <S extends T> Page<S> findPageByFilter(Example<S> example, Pageable pageable, DataFilter filter) {
+//        DataFilterContextHolder.setDataFilter(filter);
+//        Page<S> page = br.findAll(example, pageable);
+//        DataFilterContextHolder.removeDataFilter();
+//        return page;
+//    }
+//
+//    @Override
+//    public <S extends T> long findCountByFilter(Example<S> example, DataFilter filter) {
+//        DataFilterContextHolder.setDataFilter(filter);
+//        long count = br.count(example);
+//        DataFilterContextHolder.removeDataFilter();
+//        return count;
+//    }
 
 //    public static void main(String[] args) {
 //        Set<BaseSearchField> conditions = new HashSet<BaseSearchField>();

@@ -17,7 +17,7 @@ public class DataFilter {
 	/**
 	 * 过滤范围的属性名称
 	 */
-	private String filterPropName = "dept_id";
+	private String filterPropName = "deptId";
 
 	/**
 	 * 具体的数据范围

@@ -1,6 +1,0 @@
-spring:
-  jpa:
-    properties:
-      hibernate:
-        session_factory:
-          statement_inspector: vip.efactory.ejpa.datafilter.DataFilterInterceptor

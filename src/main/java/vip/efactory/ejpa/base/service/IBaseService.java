@@ -317,6 +317,17 @@ public interface IBaseService<T extends BaseEntity, ID> {
 
 
     /**
+     * Description: 高级模糊查询及分页
+     *
+     * @param entity   包含高级查询条件的实体
+     * @param pageable 分页参数对象
+     * @param filter   数据过滤对象
+     * @return org.springframework.data.domain.Page&lt;T&gt;
+     * @author dbdu
+     */
+    Page<T> advancedQuery(T entity, Pageable pageable, DataFilter filter);
+
+    /**
      * Description: 带数据过滤的分页对象
      *
      * @param var1   分页对象
@@ -332,7 +343,16 @@ public interface IBaseService<T extends BaseEntity, ID> {
      * @param filter 数据过滤条件
      * @return List<T>
      */
-    <S extends T> Iterable<S> getListByFilter(Specification<S> spec, DataFilter filter);
+    Iterable<T> getListByFilter(Specification<T> spec, DataFilter filter);
+
+    /**
+     * 根据查询条件及过滤条件查询分页数据
+     *
+     * @param pageable 分页参数对象
+     * @param filter   数据过滤条件
+     * @return Page<T>
+     */
+    Page<T> getPageByFilter(Pageable pageable, DataFilter filter);
 
     /**
      * 根据查询条件及过滤条件查询分页数据
@@ -342,7 +362,7 @@ public interface IBaseService<T extends BaseEntity, ID> {
      * @param filter   数据过滤条件
      * @return Page<T>
      */
-    <S extends T> Page<S> getPageByFilter(Pageable pageable, Specification<S> spec, DataFilter filter);
+    Page<T> getPageByFilter(Pageable pageable, Specification<T> spec, DataFilter filter);
 
     /**
      * 根据查询条件及过滤条件查询总共有的记录数量
@@ -362,7 +382,7 @@ public interface IBaseService<T extends BaseEntity, ID> {
      * @param <S>     实体或者实体的子类
      * @return 集合
      */
-    <S extends T> Iterable<S> findAllByFilter(Example<S> example, DataFilter filter);
+    //<S extends T> Iterable<S> findAllByFilter(Example<S> example, DataFilter filter);
 
     /**
      * 使用基于example的查询条件及过滤条件查询分页数据
@@ -373,7 +393,7 @@ public interface IBaseService<T extends BaseEntity, ID> {
      * @param <S>      实体或者实体的子类
      * @return 分页数据
      */
-    <S extends T> Page<S> findPageByFilter(Example<S> example, Pageable pageable, DataFilter filter);
+    //<S extends T> Page<S> findPageByFilter(Example<S> example, Pageable pageable, DataFilter filter);
 
     /**
      * 使用基于example的查询条件及过滤条件查询匹配的记录数量
@@ -383,6 +403,6 @@ public interface IBaseService<T extends BaseEntity, ID> {
      * @param <S>     实体或者实体的子类
      * @return 匹配的数量
      */
-    <S extends T> long findCountByFilter(Example<S> example, DataFilter filter);
+    //<S extends T> long findCountByFilter(Example<S> example, DataFilter filter);
 
 }
