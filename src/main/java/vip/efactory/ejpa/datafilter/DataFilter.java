@@ -15,7 +15,7 @@ import java.util.List;
 public class DataFilter {
 
 	/**
-	 * 过滤范围的属性名称
+	 * 过滤范围的属性名称,例如：deptId，userId
 	 */
 	private String filterPropName = "deptId";
 
@@ -25,17 +25,8 @@ public class DataFilter {
 	private List<Long> deptIds = new ArrayList<>();
 
 	/**
-	 * 是否只查询本部门
+	 * 默认只是本级部门
 	 */
-	private Boolean isOnly = false;
-
-	/**
-	 * 函数名称，默认 SELECT * ;
-	 *
-	 * <ul>
-	 * <li>COUNT(1)</li>
-	 * </ul>
-	 */
-	private DataFilterFuncEnum func = DataFilterFuncEnum.ALL;
+	private DataFilterTypeEnum level = DataFilterTypeEnum.OWN_LEVEL;
 
 }

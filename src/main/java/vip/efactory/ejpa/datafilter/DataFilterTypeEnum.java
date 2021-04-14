@@ -17,7 +17,7 @@ public enum DataFilterTypeEnum {
 	ALL(0, "全部"),
 
 	/**
-	 * 自定义部门
+	 * 自定义部门，这种可以在实体的加一个字段专门用于保存自定义的部门id或者用户Id
 	 */
 	CUSTOM(1, "自定义部门"),
 
