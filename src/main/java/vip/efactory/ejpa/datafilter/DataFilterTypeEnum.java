@@ -12,11 +12,6 @@ import lombok.Getter;
 public enum DataFilterTypeEnum {
 
 	/**
-	 * 查询全部数据
-	 */
-	ALL(0, "全部"),
-
-	/**
 	 * 自定义部门，这种可以在实体的加一个字段专门用于保存自定义的部门id或者用户Id
 	 */
 	CUSTOM(1, "自定义部门"),
@@ -24,17 +19,22 @@ public enum DataFilterTypeEnum {
 	/**
 	 * 本级及子级部门
 	 */
-	OWN_CHILD_LEVEL(2, "本级及子级部门"),
+	OWN_AND_CHILD_LEVEL(2, "本级及子级部门"),
 
 	/**
 	 * 本级
 	 */
-	OWN_LEVEL(3, "本级"),
+	ONLY_THIS_LEVEL(3, "本级"),
+
+	/**
+	 * 仅子级部门数据，不包含本机数据
+	 */
+	ONLY_CHILD(4, "仅子级数据"),
 
 	/**
 	 * 仅仅是自己
 	 */
-	ONLY_SELF(4, "仅仅是自己"),
+	ONLY_SELF(5, "仅仅是自己"),
 	;
 
 	/**

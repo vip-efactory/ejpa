@@ -744,7 +744,7 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
             @Override
             public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 String key = filter.getFilterPropName();
-                List<Long> valueList = filter.getDeptIds();
+                Set<Long> valueList = filter.getDeptIds();
 
                 Expression<Comparable> exp = root.<Comparable>get(key);
                 Predicate finalPredicat = exp.in(valueList);
@@ -785,34 +785,6 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
         return page;
     }
 
-//    @Override
-//    public <S extends T> long getCountByFilter(Specification<S> spec, DataFilter filter) {
-//        return 0;
-//    }
-
-//    @Override
-//    public <S extends T> Iterable<S> findAllByFilter(Example<S> example, DataFilter filter) {
-//        DataFilterContextHolder.setDataFilter(filter);
-//        List<S> data = br.findAll(example);
-//        DataFilterContextHolder.removeDataFilter();
-//        return data;
-//    }
-//
-//    @Override
-//    public <S extends T> Page<S> findPageByFilter(Example<S> example, Pageable pageable, DataFilter filter) {
-//        DataFilterContextHolder.setDataFilter(filter);
-//        Page<S> page = br.findAll(example, pageable);
-//        DataFilterContextHolder.removeDataFilter();
-//        return page;
-//    }
-//
-//    @Override
-//    public <S extends T> long findCountByFilter(Example<S> example, DataFilter filter) {
-//        DataFilterContextHolder.setDataFilter(filter);
-//        long count = br.count(example);
-//        DataFilterContextHolder.removeDataFilter();
-//        return count;
-//    }
 
 //    public static void main(String[] args) {
 //        Set<BaseSearchField> conditions = new HashSet<BaseSearchField>();
