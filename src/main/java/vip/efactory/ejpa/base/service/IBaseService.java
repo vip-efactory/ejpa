@@ -5,8 +5,10 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Async;
 import vip.efactory.ejpa.base.entity.BaseEntity;
+import vip.efactory.ejpa.datafilter.DataFilter;
 
 import java.util.*;
 
@@ -308,4 +310,97 @@ public interface IBaseService<T extends BaseEntity, ID> {
      */
     @Async
     void update(Observable o, Object arg);
+
+    /***************************************以下是数据范围相关的查询方法***************************************************/
+
+
+    /**
+     * Description: 高级模糊查询及分页
+     *
+     * @param entity   包含高级查询条件的实体
+     * @param pageable 分页参数对象
+     * @param filter   数据过滤对象
+     * @return org.springframework.data.domain.Page&lt;T&gt;
+     * @author dbdu
+     */
+    Page<T> advancedQuery(T entity, Pageable pageable, DataFilter filter);
+
+    /**
+     * Description: 带数据过滤的分页对象
+     *
+     * @param var1   分页对象
+     * @param filter 分页对象
+     * @return Page
+     */
+    Page<T> findAll(Pageable var1, DataFilter filter);
+
+    /**
+     * 根据查询条件及过滤条件查询列表数据
+     *
+     * @param spec   查询条件
+     * @param filter 数据过滤条件
+     * @return List<T>
+     */
+    Iterable<T> getListByFilter(Specification<T> spec, DataFilter filter);
+
+    /**
+     * 根据查询条件及过滤条件查询分页数据
+     *
+     * @param pageable 分页参数对象
+     * @param filter   数据过滤条件
+     * @return Page<T>
+     */
+    Page<T> getPageByFilter(Pageable pageable, DataFilter filter);
+
+    /**
+     * 根据查询条件及过滤条件查询分页数据
+     *
+     * @param pageable 分页参数对象
+     * @param spec     查询条件
+     * @param filter   数据过滤条件
+     * @return Page<T>
+     */
+    Page<T> getPageByFilter(Pageable pageable, Specification<T> spec, DataFilter filter);
+
+    /**
+     * 根据查询条件及过滤条件查询总共有的记录数量
+     *
+     * @param spec   查询条件
+     * @param filter 数据过滤条件
+     * @return long 数值
+     */
+//    <S extends T> long getCountByFilter(Specification<S> spec, DataFilter filter);
+
+
+    /**
+     * 使用基于example的查询条件及过滤条件查询所有的数据
+     *
+     * @param example 查询条件
+     * @param filter  数据过滤条件
+     * @param <S>     实体或者实体的子类
+     * @return 集合
+     */
+    //<S extends T> Iterable<S> findAllByFilter(Example<S> example, DataFilter filter);
+
+    /**
+     * 使用基于example的查询条件及过滤条件查询分页数据
+     *
+     * @param example  查询条件
+     * @param pageable 分页条件
+     * @param filter   数据过滤条件
+     * @param <S>      实体或者实体的子类
+     * @return 分页数据
+     */
+    //<S extends T> Page<S> findPageByFilter(Example<S> example, Pageable pageable, DataFilter filter);
+
+    /**
+     * 使用基于example的查询条件及过滤条件查询匹配的记录数量
+     *
+     * @param example 查询条件
+     * @param filter  数据过滤条件
+     * @param <S>     实体或者实体的子类
+     * @return 匹配的数量
+     */
+    //<S extends T> long findCountByFilter(Example<S> example, DataFilter filter);
+
 }

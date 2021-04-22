@@ -8,7 +8,8 @@
     <version>4.0.1</version>
     <packaging>jar</packaging>
     <name>ejpa</name>
-    <description>基于jpa再封装,常用的模板CRUD,分页排序,多字段高级搜索,国际化，多租户等功能，https://github.com/vip-efactory/ejpa </description>
+    <description>基于jpa再封装,常用的模板CRUD,分页排序,多字段高级搜索,国际化，多租户等功能
+        (Re-encapsulation based on Spring Data jpa, commonly used template CRUD, paging sort, multi-field advanced search, internationalization, multi-tenancy and other functions)，https://github.com/vip-efactory/ejpa </description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -21,6 +22,7 @@
         <validation.api.version>2.0.1.Final</validation.api.version>
         <ali.ttl.version>2.11.4</ali.ttl.version>
         <querydsl.version>4.3.1</querydsl.version>
+        <hutool.version>5.5.8</hutool.version>
     </properties>
 
     <dependencies>
@@ -109,7 +111,11 @@
             <artifactId>validation-api</artifactId>
             <version>${validation.api.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
     </dependencies>
 
     <url>https://github.com/vip-efactory/ejpa</url>
