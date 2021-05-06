@@ -44,8 +44,9 @@ public class DataFilter {
      * 判断是否需要计算来进一步确定数据权限范围
      */
     private void calculateScope() {
-        // 如果level是本级与仅仅自己则不处理计算，即仅当时本级包含子级或者是仅仅是子级时才计算。
-        if (DataFilterTypeEnum.ONLY_SELF.getType() == level.getType() || DataFilterTypeEnum.ONLY_THIS_LEVEL.getType() == level.getType()) {
+        // 如果level是本级、仅仅自己及自定义方式则不处理计算，自定义的方式条件值来源于记录本身
+        // ，即仅当时本级包含子级或者是仅仅是子级时才计算。
+        if (DataFilterTypeEnum.ONLY_SELF.getType() == level.getType() || DataFilterTypeEnum.ONLY_THIS_LEVEL.getType() == level.getType() || DataFilterTypeEnum.CUSTOM.getType() == level.getType()) {
             return;
         }
 
