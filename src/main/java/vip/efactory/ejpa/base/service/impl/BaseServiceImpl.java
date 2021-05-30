@@ -772,6 +772,14 @@ public class BaseServiceImpl<T extends BaseEntity, ID, BR extends BaseRepository
                         fieldP = exp.in(valueList);
                     }
                     break;
+                case 13:     // NOT_IN(13, "不包含查询"),   // 不支持，啥也不做
+                    break;
+                case 14:     // IS_NULL(8, "Null值查询"),
+                    fieldP = cb.isNull(root.get(key));
+                    break;
+                case 15:     // NOT_NULL(9, "非Null值查询")
+                    fieldP = cb.isNotNull(root.get(key));
+                    break;
                 default:
                     // 0 或其他情况,则为模糊查询,FUZZY(0, "模糊查询"),
                     fieldP = cb.like(root.get(key).as(String.class), "%" + startVal + "%");
