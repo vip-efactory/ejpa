@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 /**
  * 这个类是Hibernate框架拦截sql语句并在执行sql语句之前更换数据源提供的类
+ * @author dusuanyun
  */
 public class MultiTenantConnectionProviderImpl extends AbstractDataSourceBasedMultiTenantConnectionProviderImpl {
 

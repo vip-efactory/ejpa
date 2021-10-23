@@ -8,6 +8,7 @@ import javax.persistence.MappedSuperclass;
 
 /**
  * 系统里的租户管理表
+ * @author dusuanyun
  */
 @Getter
 @Setter

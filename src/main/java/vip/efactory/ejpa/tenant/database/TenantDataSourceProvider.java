@@ -12,12 +12,13 @@ import java.util.Map;
 
 /**
  * 租户数据源提供者
+ * @author dusuanyun
  */
 @Slf4j
 @AllArgsConstructor
 public class TenantDataSourceProvider {
     // 使用一个map来存储我们租户和对应的数据源，租户和数据源的信息就是从我们的tenant表中读出来
-    private static Map<String, DataSource> dataSourceMap = new HashMap<>();
+    private static final Map<String, DataSource> dataSourceMap = new HashMap<>();
 
     // 根据传进来的tenantId决定返回的数据源
     public static DataSource getTenantDataSource(String tenantId) {

@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 
 /**
  * 字典的基础表的实体
+ * @author dusuanyun
  */
 @Getter
 @Setter

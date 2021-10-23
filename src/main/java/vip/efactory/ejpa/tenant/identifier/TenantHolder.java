@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 
 /**
  * 当前请求的租户持有者，
+ * @author dusuanyun
  */
 @UtilityClass
 public class TenantHolder {
