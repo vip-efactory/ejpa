@@ -12,14 +12,14 @@
         (Re-encapsulation based on Spring Data jpa, commonly used template CRUD, paging sort, multi-field advanced search, internationalization, multi-tenancy and other functions)，https://github.com/vip-efactory/ejpa </description>
 
     <properties>
-        <java.version>1.8</java.version>
-        <spring.boot.version>2.5.6</spring.boot.version>
+        <java.version>17</java.version>
+        <spring.boot.version>3.1.2</spring.boot.version>
         <beanutils.version>1.9.4</beanutils.version>
         <swagger-starter.version>2.0.1.RELEASE</swagger-starter.version>
         <lombok.version>1.18.22</lombok.version>
         <common.i18n.version>1.3.0</common.i18n.version>
         <common.base.version>1.3.0</common.base.version>
-        <validation.api.version>2.0.1.Final</validation.api.version>
+        <validation.api.version>3.0.2</validation.api.version>
         <ali.ttl.version>2.12.2</ali.ttl.version>
         <querydsl.version>5.0.0</querydsl.version>
         <hutool.version>5.7.14</hutool.version>
@@ -107,8 +107,8 @@
         </dependency>
         <!-- 实体属性校验注解 -->
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
             <version>${validation.api.version}</version>
         </dependency>
         <dependency>
@@ -163,7 +163,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -173,7 +173,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>

@@ -1,10 +1,9 @@
 package vip.efactory.ejpa.base.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
 
 /**
  * 系统里的租户管理表

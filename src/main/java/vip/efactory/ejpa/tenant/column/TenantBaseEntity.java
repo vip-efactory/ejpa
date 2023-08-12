@@ -1,6 +1,8 @@
 package vip.efactory.ejpa.tenant.column;
 
 import io.swagger.annotations.ApiModel;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
@@ -8,8 +10,6 @@ import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 import vip.efactory.ejpa.base.entity.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 
 
@@ -25,7 +25,7 @@ import java.io.Serializable;
 @Setter
 @MappedSuperclass
 @ApiModel(value = "基础租户实体", description = "所有需要支持租户数据表的通用部分")
-@FilterDef(name = "tenantJpaFilter", parameters = {@ParamDef(name = "tenantId", type = "long")})
+@FilterDef(name = "tenantJpaFilter", parameters = {@ParamDef(name = "tenantId", type = long.class)})
 @Filter(name = "tenantJpaFilter", condition = "tenant_id = :tenantId")
 public abstract class TenantBaseEntity<ID> extends BaseEntity<ID> implements Serializable {
     private static final long serialVersionUID = 1L;
